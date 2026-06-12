@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Na9BSNlPCDs=",
+  "success": true,
+  "projectFilePath": "/Users/zarifababayeva/Desktop/FinalProject/OnlineAuctionApp/OnlineAuctionApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/zarifababayeva/.nuget/packages/microsoft.aspnetcore.openapi/10.0.0/microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "/Users/zarifababayeva/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
