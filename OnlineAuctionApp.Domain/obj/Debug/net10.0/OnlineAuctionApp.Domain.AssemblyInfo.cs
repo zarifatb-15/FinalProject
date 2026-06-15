@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OnlineAuctionApp.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37bbcede1a3990adfd66bb9a79797077761b26a4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5a3fd1c04bec6b219bf80b2ecdc7089c64e48675")]
 [assembly: System.Reflection.AssemblyProductAttribute("OnlineAuctionApp.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OnlineAuctionApp.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

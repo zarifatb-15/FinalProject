@@ -1,4 +1,6 @@
 namespace OnlineAuctionApp.Domain.Entities;
+using OnlineAuctionApp.Domain.Common;
+using OnlineAuctionApp.Domain.Enums;
 public class Category:BaseEntity
 {
     public string Name { get; set; } = null!;

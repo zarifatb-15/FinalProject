@@ -1,4 +1,6 @@
 namespace OnlineAuctionApp.Domain.Entities;
+using OnlineAuctionApp.Domain.Common;
+using OnlineAuctionApp.Domain.Enums;
 public class Bid:BaseEntity
 {
     public decimal Amount { get; set; }

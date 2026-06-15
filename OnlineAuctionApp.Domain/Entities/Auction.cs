@@ -1,4 +1,6 @@
 namespace OnlineAuctionApp.Domain.Entities;
+using OnlineAuctionApp.Domain.Common;
+using OnlineAuctionApp.Domain.Enums;
 public class Auction:BaseEntity
 {
     public string Title { get; set; } = null!;
@@ -7,7 +9,7 @@ public class Auction:BaseEntity
     public decimal CurrentPrice { get; set; }
     public DateTime EndTime { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    public AuctionStatus Status { get; set; } 
 
     public Guid SellerId { get; set; }
     public AppUser Seller { get; set; } = null!;

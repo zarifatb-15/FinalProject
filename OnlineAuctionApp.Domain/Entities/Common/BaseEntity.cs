@@ -1,4 +1,4 @@
-namespace OnlineAuctionApp.Domain.Entities;
+namespace OnlineAuctionApp.Domain.Common;
     public abstract class BaseEntity
     {
         public Guid Id { get; set; } = Guid.NewGuid();
