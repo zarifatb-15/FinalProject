@@ -14,9 +14,9 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OnlineAuctionApp.Application\OnlineAuctionApp.Application.csproj" />
-    <ProjectReference Include="..\OnlineAuctionApp.Infrastructure\OnlineAuctionApp.Infrastructure.csproj" />
+ <ItemGroup>
+    <ProjectReference Include="..\..\Core\OnlineAuctionApp.Application\OnlineAuctionApp.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\OnlineAuctionApp.Infrastructure\OnlineAuctionApp.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Infrastructure\OnlineAuctionApp.Persistence\OnlineAuctionApp.Persistence.csproj" />
   </ItemGroup>
 
