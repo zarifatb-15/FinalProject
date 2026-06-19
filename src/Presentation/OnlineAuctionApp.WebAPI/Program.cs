@@ -1,4 +1,4 @@
-using OnlineAuctionApp.Persistence; // 1. Bura bizim Persiste
+using OnlineAuctionApp.Persistence; 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
