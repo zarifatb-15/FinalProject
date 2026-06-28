@@ -1,7 +1,0 @@
-namespace OnlineAuctionApp.Domain.Enums;
-public enum UserRole
-{
-    Buyer = 1,
-    Seller = 2,
-    Admin = 3
-}
