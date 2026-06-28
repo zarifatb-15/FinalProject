@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using OnlineAuctionApp.Infrastructure;
 using OnlineAuctionApp.Persistence;
 using OnlineAuctionApp.Persistence.Seeders;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +54,7 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
