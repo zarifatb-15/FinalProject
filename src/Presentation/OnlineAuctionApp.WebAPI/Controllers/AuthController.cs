@@ -50,21 +50,24 @@ public class AuthController : ControllerBase
             });
         }
     }
-    [Authorize]
-[HttpGet("me")]
-public IActionResult GetCurrentUser()
-{
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var username = User.FindFirstValue(ClaimTypes.Name);
-    var email = User.FindFirstValue(ClaimTypes.Email);
-    var roles = User.FindAll(ClaimTypes.Role).Select(role => role.Value).ToList();
 
-    return Ok(new
+    [Authorize]
+    [HttpGet("me")]
+    public IActionResult GetCurrentUser()
     {
-        userId,
-        username,
-        email,
-        roles
-    });
-}
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = User.FindFirstValue(ClaimTypes.Name);
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var roles = User.FindAll(ClaimTypes.Role)
+            .Select(role => role.Value)
+            .ToList();
+
+        return Ok(new
+        {
+            userId,
+            username,
+            email,
+            roles
+        });
+    }
 }
