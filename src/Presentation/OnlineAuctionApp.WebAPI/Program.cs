@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using OnlineAuctionApp.Application;
 using OnlineAuctionApp.Infrastructure;
 using OnlineAuctionApp.Persistence;
 using OnlineAuctionApp.Persistence.Seeders;
@@ -13,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 
 var jwtKey = builder.Configuration["Jwt:Key"];

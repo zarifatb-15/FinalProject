@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using OnlineAuctionApp.Application.Interfaces.Services;
+using OnlineAuctionApp.Persistence.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +31,7 @@ public static class PersistenceServiceRegistration
     })
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<AppDbContext>();
-
+    services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 }
