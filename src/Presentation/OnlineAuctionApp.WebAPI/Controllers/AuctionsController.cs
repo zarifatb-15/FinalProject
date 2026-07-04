@@ -57,4 +57,17 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+   [Authorize(Roles = "Seller")]
+   [HttpGet("seller/my")]
+    public async Task<IActionResult> GetMyAuctions()
+    {
+        var sellerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(sellerIdValue, out var sellerId))
+        return Unauthorized(new { message = "Invalid user token." });
+
+        var auctions = await _auctionService.GetBySellerIdAsync(sellerId);
+        return Ok(auctions);
+    }
 }

@@ -71,6 +71,18 @@ public class AuctionService : IAuctionService
             .Include(a => a.Category)
             .FirstAsync(a => a.Id == auction.Id);
 
-      return _mapper.Map<AuctionReturnDto>(createdAuction);
+        return _mapper.Map<AuctionReturnDto>(createdAuction);
+    }
+    
+    public async Task<List<AuctionReturnDto>> GetBySellerIdAsync(Guid sellerId)
+    {
+        var auctions = await _context.Auctions
+        .AsNoTracking()
+        .Include(auction => auction.Category)
+        .Where(auction => auction.SellerId == sellerId)
+        .OrderByDescending(auction => auction.CreatedDate)
+        .ToListAsync();
+
+        return _mapper.Map<List<AuctionReturnDto>>(auctions);
     }
 }
