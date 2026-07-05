@@ -31,7 +31,8 @@ public static class PersistenceServiceRegistration
     })
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<AppDbContext>();
-    services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAuctionService, AuctionService>();
         return services;
     }
 }
