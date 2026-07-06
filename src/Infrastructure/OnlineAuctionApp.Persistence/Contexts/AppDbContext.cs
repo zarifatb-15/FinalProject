@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Auction> Auctions { get; set; }
     public DbSet<Bid> Bids { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<AuctionImage> AuctionImages { get; set; }
 
       protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

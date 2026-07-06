@@ -18,4 +18,5 @@ public class Auction:BaseEntity
     public Category Category { get; set; } = null!;
 
     public List<Bid> Bids { get; set; } = new List<Bid>();
+    public List<AuctionImage> Images { get; set; } = new List<AuctionImage>();
 }

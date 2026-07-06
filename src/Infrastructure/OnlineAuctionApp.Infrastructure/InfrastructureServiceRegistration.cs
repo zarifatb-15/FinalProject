@@ -10,6 +10,7 @@ public static class InfrastructureServiceRegistration
     {
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IFileService, FileService>();
 
         return services;
     }
