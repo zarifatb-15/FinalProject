@@ -18,4 +18,5 @@ public class AuctionReturnDto
 
     public Guid CategoryId { get; set; }
     public string CategoryName { get; set; } = null!;
+    public List<AuctionImageReturnDto> Images { get; set; } = new List<AuctionImageReturnDto>();
 }

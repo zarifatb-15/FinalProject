@@ -33,6 +33,7 @@ public static class PersistenceServiceRegistration
     .AddEntityFrameworkStores<AppDbContext>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAuctionService, AuctionService>();
+        services.AddScoped<IAuctionImageService, AuctionImageService>();
         return services;
     }
 }

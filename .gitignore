@@ -482,3 +482,12 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+# Ignore accidental Windows-style build artifacts on macOS
+**/bin*Debug/
+**/bin*Debug/**
+
+# Uploaded user files
+src/Presentation/OnlineAuctionApp.WebAPI/wwwroot/uploads/**
+!src/Presentation/OnlineAuctionApp.WebAPI/wwwroot/uploads/
+!src/Presentation/OnlineAuctionApp.WebAPI/wwwroot/uploads/auctions/
+!src/Presentation/OnlineAuctionApp.WebAPI/wwwroot/uploads/auctions/.gitkeep

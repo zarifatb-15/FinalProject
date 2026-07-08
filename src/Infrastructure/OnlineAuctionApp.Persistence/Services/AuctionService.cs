@@ -24,6 +24,7 @@ public class AuctionService : IAuctionService
         var auctions = await _context.Auctions
             .AsNoTracking()
             .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
             .OrderByDescending(auction => auction.CreatedDate)
             .ToListAsync();
 
@@ -35,6 +36,7 @@ public class AuctionService : IAuctionService
         var auction = await _context.Auctions
             .AsNoTracking()
             .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
             .FirstOrDefaultAsync(auction => auction.Id == id);
 
         if (auction is null)
@@ -69,19 +71,21 @@ public class AuctionService : IAuctionService
         var createdAuction = await _context.Auctions
             .AsNoTracking()
             .Include(a => a.Category)
+            .Include(a => a.Images)
             .FirstAsync(a => a.Id == auction.Id);
 
         return _mapper.Map<AuctionReturnDto>(createdAuction);
     }
-    
+
     public async Task<List<AuctionReturnDto>> GetBySellerIdAsync(Guid sellerId)
     {
         var auctions = await _context.Auctions
-        .AsNoTracking()
-        .Include(auction => auction.Category)
-        .Where(auction => auction.SellerId == sellerId)
-        .OrderByDescending(auction => auction.CreatedDate)
-        .ToListAsync();
+            .AsNoTracking()
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Where(auction => auction.SellerId == sellerId)
+            .OrderByDescending(auction => auction.CreatedDate)
+            .ToListAsync();
 
         return _mapper.Map<List<AuctionReturnDto>>(auctions);
     }
