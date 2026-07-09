@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.WebAPI.Requests;
 using OnlineAuctionApp.Application.DTOs.Auctions;
+using OnlineAuctionApp.Application.DTOs.Bids;
 using OnlineAuctionApp.Application.Interfaces.Services;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
@@ -13,12 +14,15 @@ public class AuctionsController : ControllerBase
 {
     private readonly IAuctionService _auctionService;
     private readonly IAuctionImageService _auctionImageService;
+    private readonly IBidService _bidService;
 
     public AuctionsController(IAuctionService auctionService,
-    IAuctionImageService auctionImageService)
+    IAuctionImageService auctionImageService,
+    IBidService bidService)
     {
         _auctionImageService = auctionImageService;
         _auctionService = auctionService;
+        _bidService = bidService;
     }
 
     [HttpGet]
@@ -107,6 +111,38 @@ public class AuctionsController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
+        }
+    }
+    [Authorize(Roles = "Buyer")]
+    [HttpPost("{auctionId}/bids")]
+    public async Task<IActionResult> PlaceBid(Guid auctionId, [FromBody] BidCreateDto dto)
+    {
+        var buyerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(buyerIdValue, out var buyerId))
+            return Unauthorized(new { message = "Invalid user token." });
+
+        try
+        {
+            var bid = await _bidService.PlaceBidAsync(auctionId, buyerId, dto);
+            return Ok(bid);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+    [HttpGet("{auctionId}/bids")]
+    public async Task<IActionResult> GetBidHistory(Guid auctionId)
+    {
+        try
+        {
+            var bids = await _bidService.GetByAuctionIdAsync(auctionId);
+            return Ok(bids);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
     }
 }

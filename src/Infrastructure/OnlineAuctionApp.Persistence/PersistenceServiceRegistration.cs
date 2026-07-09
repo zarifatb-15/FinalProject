@@ -34,6 +34,7 @@ public static class PersistenceServiceRegistration
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAuctionService, AuctionService>();
         services.AddScoped<IAuctionImageService, AuctionImageService>();
+        services.AddScoped<IBidService, BidService>();
         return services;
     }
 }
