@@ -15,6 +15,8 @@ public class AuctionReturnDto
     public string Status { get; set; } = null!;
 
     public Guid SellerId { get; set; }
+    public Guid? WinnerId { get; set; }
+    public string? WinnerUsername { get; set; }
 
     public Guid CategoryId { get; set; }
     public string CategoryName { get; set; } = null!;

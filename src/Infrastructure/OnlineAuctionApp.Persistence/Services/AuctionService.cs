@@ -83,6 +83,7 @@ public class AuctionService : IAuctionService
             .AsNoTracking()
             .Include(auction => auction.Category)
             .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
             .Where(auction => auction.SellerId == sellerId)
             .OrderByDescending(auction => auction.CreatedDate)
             .ToListAsync();

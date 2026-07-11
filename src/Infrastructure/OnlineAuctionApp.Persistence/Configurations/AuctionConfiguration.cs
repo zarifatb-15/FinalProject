@@ -19,5 +19,10 @@ public class AuctionConfiguration : IEntityTypeConfiguration<Auction>
                      .WithMany()
                      .HasForeignKey(a => a.SellerId)
                      .OnDelete(DeleteBehavior.Restrict);
+
+              builder.HasOne(auction => auction.Winner)
+                     .WithMany()
+                     .HasForeignKey(auction => auction.WinnerId)
+                     .OnDelete(DeleteBehavior.Restrict);
        }
 }
