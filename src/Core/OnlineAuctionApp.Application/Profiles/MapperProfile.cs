@@ -2,6 +2,7 @@ using AutoMapper;
 using OnlineAuctionApp.Application.DTOs.Categories;
 using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.DTOs.Bids;
+using OnlineAuctionApp.Application.DTOs.Notifications;
 using OnlineAuctionApp.Domain.Entities;
 
 namespace OnlineAuctionApp.Application.Profiles;
@@ -27,5 +28,6 @@ public class MapperProfile : Profile
         .ForMember(dest => dest.BuyerUsername, opt => opt.MapFrom(src => src.Buyer.UserName));
 
         CreateMap<BidCreateDto, Bid>();
+        CreateMap<Notification, NotificationReturnDto>();
     }
 }

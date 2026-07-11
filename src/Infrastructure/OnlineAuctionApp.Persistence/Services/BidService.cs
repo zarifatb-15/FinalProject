@@ -12,11 +12,16 @@ public class BidService : IBidService
 {
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
+    private readonly INotificationService _notificationService;
 
-    public BidService(AppDbContext context, IMapper mapper)
+    public BidService(
+        AppDbContext context,
+        IMapper mapper,
+        INotificationService notificationService)
     {
         _context = context;
         _mapper = mapper;
+        _notificationService = notificationService;
     }
 
     public async Task<BidReturnDto> PlaceBidAsync(Guid auctionId, Guid buyerId, BidCreateDto dto)
@@ -39,6 +44,13 @@ public class BidService : IBidService
         if (dto.Amount <= auction.CurrentPrice)
             throw new InvalidOperationException("Bid amount must be greater than current price.");
 
+        var previousHighestBid = await _context.Bids
+            .AsNoTracking()
+            .Where(bid => bid.AuctionId == auction.Id)
+            .OrderByDescending(bid => bid.Amount)
+            .FirstOrDefaultAsync();
+
+
         var bid = new Bid
         {
             AuctionId = auction.Id,
@@ -52,6 +64,14 @@ public class BidService : IBidService
 
         await _context.Bids.AddAsync(bid);
         await _context.SaveChangesAsync();
+
+
+        if (previousHighestBid is not null && previousHighestBid.BuyerId != buyerId)
+        {
+            var message = $"You have been outbid on auction '{auction.Title}'.";
+
+            await _notificationService.CreateAsync(previousHighestBid.BuyerId, message);
+        }
 
         var createdBid = await _context.Bids
             .AsNoTracking()
