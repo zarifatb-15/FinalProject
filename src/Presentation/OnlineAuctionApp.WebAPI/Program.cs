@@ -1,4 +1,7 @@
 using System.Text;
+using OnlineAuctionApp.Application.Interfaces.Services;
+using OnlineAuctionApp.WebAPI.Hubs;
+using OnlineAuctionApp.WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using OnlineAuctionApp.Application;
@@ -10,12 +13,13 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
+builder.Services.AddSignalR();
 builder.Services.AddOpenApi();
 
 builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddScoped<IRealtimeNotificationService, RealtimeNotificationService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 
@@ -66,5 +70,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();

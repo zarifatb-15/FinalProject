@@ -4,7 +4,7 @@ namespace OnlineAuctionApp.Application.Interfaces.Services;
 
 public interface INotificationService
 {
-    Task CreateAsync(Guid userId, string message);
+    Task<NotificationReturnDto> CreateAsync(Guid userId, string message);
 
     Task<List<NotificationReturnDto>> GetByUserIdAsync(Guid userId);
 

@@ -18,7 +18,7 @@ public class NotificationService : INotificationService
         _mapper = mapper;
     }
 
-    public async Task CreateAsync(Guid userId, string message)
+    public async Task<NotificationReturnDto> CreateAsync(Guid userId, string message)
     {
         var userExists = await _context.Users
             .AnyAsync(user => user.Id == userId);
@@ -35,6 +35,8 @@ public class NotificationService : INotificationService
 
         await _context.Notifications.AddAsync(notification);
         await _context.SaveChangesAsync();
+
+        return _mapper.Map<NotificationReturnDto>(notification);
     }
 
     public async Task<List<NotificationReturnDto>> GetByUserIdAsync(Guid userId)

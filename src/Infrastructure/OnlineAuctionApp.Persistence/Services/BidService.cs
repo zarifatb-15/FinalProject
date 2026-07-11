@@ -13,15 +13,18 @@ public class BidService : IBidService
     private readonly AppDbContext _context;
     private readonly IMapper _mapper;
     private readonly INotificationService _notificationService;
+    private readonly IRealtimeNotificationService _realtimeNotificationService;
 
     public BidService(
         AppDbContext context,
         IMapper mapper,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IRealtimeNotificationService realtimeNotificationService)
     {
         _context = context;
         _mapper = mapper;
         _notificationService = notificationService;
+        _realtimeNotificationService = realtimeNotificationService;
     }
 
     public async Task<BidReturnDto> PlaceBidAsync(Guid auctionId, Guid buyerId, BidCreateDto dto)
@@ -69,8 +72,11 @@ public class BidService : IBidService
         if (previousHighestBid is not null && previousHighestBid.BuyerId != buyerId)
         {
             var message = $"You have been outbid on auction '{auction.Title}'.";
+            var notification = await _notificationService.CreateAsync(previousHighestBid.BuyerId, message);
 
-            await _notificationService.CreateAsync(previousHighestBid.BuyerId, message);
+            await _realtimeNotificationService.SendNotificationAsync(
+                previousHighestBid.BuyerId,
+                notification);
         }
 
         var createdBid = await _context.Bids
