@@ -15,14 +15,17 @@ public class AuctionsController : ControllerBase
     private readonly IAuctionService _auctionService;
     private readonly IAuctionImageService _auctionImageService;
     private readonly IBidService _bidService;
+    private readonly IAuctionClosingService _auctionClosingService;
 
     public AuctionsController(IAuctionService auctionService,
-    IAuctionImageService auctionImageService,
-    IBidService bidService)
+        IAuctionImageService auctionImageService,
+        IBidService bidService,
+        IAuctionClosingService auctionClosingService)
     {
         _auctionImageService = auctionImageService;
         _auctionService = auctionService;
         _bidService = bidService;
+        _auctionClosingService = auctionClosingService;
     }
 
     [HttpGet]
@@ -143,6 +146,34 @@ public class AuctionsController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+    }
+    [Authorize]
+    [HttpPost("close-expired")]
+    public async Task<IActionResult> CloseExpiredAuctions()
+    {
+        var closedCount = await _auctionClosingService.CloseExpiredAuctionsAsync();
+
+        return Ok(new
+        {
+            closedCount
+        });
+    }
+    [Authorize]
+    [HttpPost("{auctionId}/close")]
+    public async Task<IActionResult> CloseAuction(Guid auctionId)
+    {
+        try
+        {
+            var auction = await _auctionClosingService.CloseAuctionAsync(auctionId);
+            return Ok(auction);
+        }
+        catch (InvalidOperationException ex)
+        {
+            if (ex.Message == "Auction not found.")
+                return NotFound(new { message = ex.Message });
+
+            return BadRequest(new { message = ex.Message });
         }
     }
 }
