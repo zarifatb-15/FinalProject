@@ -25,6 +25,7 @@ public class AuctionService : IAuctionService
             .AsNoTracking()
             .Include(auction => auction.Category)
             .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
             .OrderByDescending(auction => auction.CreatedDate)
             .ToListAsync();
 
@@ -37,6 +38,7 @@ public class AuctionService : IAuctionService
             .AsNoTracking()
             .Include(auction => auction.Category)
             .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
             .FirstOrDefaultAsync(auction => auction.Id == id);
 
         if (auction is null)
