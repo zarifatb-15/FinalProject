@@ -8,4 +8,8 @@ public interface IAuctionService
     Task<AuctionReturnDto> GetByIdAsync(Guid id);
     Task<AuctionReturnDto> CreateAsync(AuctionCreateDto dto, Guid sellerId);
     Task<List<AuctionReturnDto>> GetBySellerIdAsync(Guid sellerId);
+
+    Task<List<AuctionReturnDto>> GetActiveBySellerIdAsync(Guid sellerId);
+    Task<List<AuctionReturnDto>> GetCompletedBySellerIdAsync(Guid sellerId);
+    Task<SellerDashboardSummaryDto> GetSellerDashboardSummaryAsync(Guid sellerId);
 }

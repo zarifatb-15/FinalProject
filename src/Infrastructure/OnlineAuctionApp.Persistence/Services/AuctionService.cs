@@ -46,6 +46,59 @@ public class AuctionService : IAuctionService
 
         return _mapper.Map<AuctionReturnDto>(auction);
     }
+    public async Task<List<AuctionReturnDto>> GetActiveBySellerIdAsync(Guid sellerId)
+    {
+        var auctions = await _context.Auctions
+            .AsNoTracking()
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
+            .Where(auction =>
+                auction.SellerId == sellerId &&
+                auction.Status == AuctionStatus.Active)
+            .OrderByDescending(auction => auction.CreatedDate)
+            .ToListAsync();
+
+        return _mapper.Map<List<AuctionReturnDto>>(auctions);
+    }
+
+    public async Task<List<AuctionReturnDto>> GetCompletedBySellerIdAsync(Guid sellerId)
+    {
+        var auctions = await _context.Auctions
+            .AsNoTracking()
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
+            .Where(auction =>
+                auction.SellerId == sellerId &&
+                auction.Status == AuctionStatus.Completed)
+            .OrderByDescending(auction => auction.CreatedDate)
+            .ToListAsync();
+
+        return _mapper.Map<List<AuctionReturnDto>>(auctions);
+    }
+    public async Task<SellerDashboardSummaryDto> GetSellerDashboardSummaryAsync(Guid sellerId)
+    {
+        var activeAuctionCount = await _context.Auctions
+            .CountAsync(auction =>
+                auction.SellerId == sellerId &&
+                auction.Status == AuctionStatus.Active);
+
+        var completedAuctionCount = await _context.Auctions
+            .CountAsync(auction =>
+                auction.SellerId == sellerId &&
+                auction.Status == AuctionStatus.Completed);
+
+        var totalAuctionCount = await _context.Auctions
+            .CountAsync(auction => auction.SellerId == sellerId);
+
+        return new SellerDashboardSummaryDto
+        {
+            ActiveAuctionCount = activeAuctionCount,
+            CompletedAuctionCount = completedAuctionCount,
+            TotalAuctionCount = totalAuctionCount
+        };
+    }
 
     public async Task<AuctionReturnDto> CreateAsync(AuctionCreateDto dto, Guid sellerId)
     {
