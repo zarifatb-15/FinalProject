@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineAuctionApp.WebAPI.Requests;
 using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.DTOs.Bids;
 using OnlineAuctionApp.Application.Interfaces.Services;
+using OnlineAuctionApp.WebAPI.Extensions;
+using OnlineAuctionApp.WebAPI.Requests;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
 
@@ -53,9 +53,7 @@ public class AuctionsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AuctionCreateDto dto)
     {
-        var sellerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(sellerIdValue, out var sellerId))
+        if (!User.TryGetUserId(out var sellerId))
             return Unauthorized(new { message = "Invalid user token." });
 
         try
@@ -73,9 +71,7 @@ public class AuctionsController : ControllerBase
     [HttpGet("seller/my")]
     public async Task<IActionResult> GetMyAuctions()
     {
-        var sellerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(sellerIdValue, out var sellerId))
+        if (!User.TryGetUserId(out var sellerId))
             return Unauthorized(new { message = "Invalid user token." });
 
         var auctions = await _auctionService.GetBySellerIdAsync(sellerId);
@@ -83,13 +79,44 @@ public class AuctionsController : ControllerBase
     }
 
     [Authorize(Roles = "Seller")]
+    [HttpGet("seller/active")]
+    public async Task<IActionResult> GetMyActiveAuctions()
+    {
+        if (!User.TryGetUserId(out var sellerId))
+            return Unauthorized(new { message = "Invalid user token." });
+
+        var auctions = await _auctionService.GetActiveBySellerIdAsync(sellerId);
+        return Ok(auctions);
+    }
+
+    [Authorize(Roles = "Seller")]
+    [HttpGet("seller/completed")]
+    public async Task<IActionResult> GetMyCompletedAuctions()
+    {
+        if (!User.TryGetUserId(out var sellerId))
+            return Unauthorized(new { message = "Invalid user token." });
+
+        var auctions = await _auctionService.GetCompletedBySellerIdAsync(sellerId);
+        return Ok(auctions);
+    }
+
+    [Authorize(Roles = "Seller")]
+    [HttpGet("seller/dashboard-summary")]
+    public async Task<IActionResult> GetSellerDashboardSummary()
+    {
+        if (!User.TryGetUserId(out var sellerId))
+            return Unauthorized(new { message = "Invalid user token." });
+
+        var summary = await _auctionService.GetSellerDashboardSummaryAsync(sellerId);
+        return Ok(summary);
+    }
+
+    [Authorize(Roles = "Seller")]
     [HttpPost("{auctionId}/images")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadImage(Guid auctionId, [FromForm] AuctionImageUploadRequest request)
     {
-        var sellerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(sellerIdValue, out var sellerId))
+        if (!User.TryGetUserId(out var sellerId))
             return Unauthorized(new { message = "Invalid user token." });
 
         if (request.Image is null || request.Image.Length == 0)
@@ -116,13 +143,12 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
     [Authorize(Roles = "Buyer")]
     [HttpPost("{auctionId}/bids")]
     public async Task<IActionResult> PlaceBid(Guid auctionId, [FromBody] BidCreateDto dto)
     {
-        var buyerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(buyerIdValue, out var buyerId))
+        if (!User.TryGetUserId(out var buyerId))
             return Unauthorized(new { message = "Invalid user token." });
 
         try
@@ -135,6 +161,7 @@ public class AuctionsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
     [HttpGet("{auctionId}/bids")]
     public async Task<IActionResult> GetBidHistory(Guid auctionId)
     {
@@ -148,6 +175,7 @@ public class AuctionsController : ControllerBase
             return NotFound(new { message = ex.Message });
         }
     }
+
     [Authorize]
     [HttpPost("close-expired")]
     public async Task<IActionResult> CloseExpiredAuctions()
@@ -159,6 +187,7 @@ public class AuctionsController : ControllerBase
             closedCount
         });
     }
+
     [Authorize]
     [HttpPost("{auctionId}/close")]
     public async Task<IActionResult> CloseAuction(Guid auctionId)
