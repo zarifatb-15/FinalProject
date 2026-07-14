@@ -19,7 +19,8 @@ public class MapperProfile : Profile
 
         CreateMap<Auction, AuctionReturnDto>()
         .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-        .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+        .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
+        .ForMember(dest => dest.WinnerUsername, opt => opt.MapFrom(src => src.Winner != null ? src.Winner.UserName : null));
 
         CreateMap<AuctionCreateDto, Auction>();
 

@@ -20,6 +20,7 @@ builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddScoped<IRealtimeNotificationService, RealtimeNotificationService>();
+builder.Services.AddHostedService<AuctionClosingBackgroundService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 
