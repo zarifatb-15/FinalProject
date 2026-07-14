@@ -4,7 +4,7 @@ namespace OnlineAuctionApp.Application.Interfaces.Services;
 
 public interface IAuctionService
 {
-    Task<List<AuctionReturnDto>> GetAllAsync();
+    Task<List<AuctionReturnDto>> GetAllAsync(AuctionFilterDto filter);
     Task<AuctionReturnDto> GetByIdAsync(Guid id);
     Task<AuctionReturnDto> CreateAsync(AuctionCreateDto dto, Guid sellerId);
     Task<List<AuctionReturnDto>> GetBySellerIdAsync(Guid sellerId);
