@@ -29,10 +29,17 @@ public class AuctionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] AuctionFilterDto filter)
     {
-        var auctions = await _auctionService.GetAllAsync();
-        return Ok(auctions);
+        try
+        {
+            var auctions = await _auctionService.GetAllAsync(filter);
+            return Ok(auctions);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpGet("{id}")]

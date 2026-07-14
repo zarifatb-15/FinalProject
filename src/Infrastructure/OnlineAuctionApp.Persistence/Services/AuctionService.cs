@@ -19,13 +19,55 @@ public class AuctionService : IAuctionService
         _mapper = mapper;
     }
 
-    public async Task<List<AuctionReturnDto>> GetAllAsync()
+    public async Task<List<AuctionReturnDto>> GetAllAsync(AuctionFilterDto filter)
     {
-        var auctions = await _context.Auctions
+        if (filter.MinPrice.HasValue && filter.MinPrice.Value < 0)
+            throw new InvalidOperationException("Minimum price cannot be negative.");
+
+        if (filter.MaxPrice.HasValue && filter.MaxPrice.Value <= 0)
+            throw new InvalidOperationException("Maximum price must be greater than zero.");
+
+        if (filter.MinPrice.HasValue &&
+            filter.MaxPrice.HasValue &&
+            filter.MinPrice.Value > filter.MaxPrice.Value)
+            throw new InvalidOperationException("Minimum price cannot be greater than maximum price.");
+
+        var query = _context.Auctions
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(auction => auction.Category)
             .Include(auction => auction.Images)
             .Include(auction => auction.Winner)
+            .Where(auction => auction.Status == AuctionStatus.Active)
+            .AsQueryable();
+
+        if (filter.CategoryId.HasValue)
+        {
+            query = query.Where(auction => auction.CategoryId == filter.CategoryId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Search))
+        {
+            var search = filter.Search.Trim();
+            var searchPattern = $"%{search}%";
+
+            query = query.Where(auction =>
+                EF.Functions.Like(auction.Title, searchPattern) ||
+                EF.Functions.Like(auction.Description, searchPattern) ||
+                EF.Functions.Like(auction.Category.Name, searchPattern));
+        }
+
+        if (filter.MinPrice.HasValue)
+        {
+            query = query.Where(auction => auction.CurrentPrice >= filter.MinPrice.Value);
+        }
+
+        if (filter.MaxPrice.HasValue)
+        {
+            query = query.Where(auction => auction.CurrentPrice <= filter.MaxPrice.Value);
+        }
+
+        var auctions = await query
             .OrderByDescending(auction => auction.CreatedDate)
             .ToListAsync();
 
