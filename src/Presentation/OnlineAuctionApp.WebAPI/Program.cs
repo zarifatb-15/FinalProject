@@ -9,6 +9,7 @@ using OnlineAuctionApp.Infrastructure;
 using OnlineAuctionApp.Persistence;
 using OnlineAuctionApp.Persistence.Seeders;
 using Scalar.AspNetCore;
+using OnlineAuctionApp.WebAPI.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,21 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
         ClockSkew = TimeSpan.Zero
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var authorizationHeader = context.Request.Headers.Authorization.ToString();
+
+            if (string.IsNullOrWhiteSpace(authorizationHeader) &&
+                context.Request.Cookies.TryGetValue(AuthCookieNames.AccessToken, out var accessToken))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
