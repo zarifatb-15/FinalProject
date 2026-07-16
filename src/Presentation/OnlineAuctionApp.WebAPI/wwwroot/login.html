@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Online Auction</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="nav-shell">
+        <a href="/index.html" class="brand">
+          <span class="brand-mark">A</span>
+          <span>
+            <strong>Online Auction</strong>
+            <small>Live bidding marketplace</small>
+          </span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="/auctions.html">Auctions</a>
+          <a
+            href="/seller-dashboard.html"
+            id="sellerDashboardLink"
+            class="hidden"
+            >Seller Dashboard</a
+          >
+          <a href="/login.html" id="loginLink">Login</a>
+          <a
+            href="/register.html"
+            id="registerLink"
+            class="btn btn-small btn-outline"
+            >Register</a
+          >
+          <button id="logoutButton" class="btn btn-small btn-outline hidden">
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="auth-page">
+      <section class="auth-card">
+        <span class="eyebrow">Welcome back</span>
+        <h1>Login to your account</h1>
+        <p>Use your buyer or seller account to continue.</p>
+
+        <form id="loginForm" class="form">
+          <label>
+            Username or Email
+            <input
+              type="text"
+              id="usernameOrEmail"
+              required
+              placeholder="sara@example.com"
+            />
+          </label>
+
+          <label>
+            Password
+            <input
+              type="password"
+              id="password"
+              required
+              placeholder="Password123"
+            />
+          </label>
+
+          <button type="submit" class="btn btn-primary full-width">
+            Login
+          </button>
+        </form>
+
+        <p id="loginMessage" class="message"></p>
+      </section>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
+  </body>
+</html>
