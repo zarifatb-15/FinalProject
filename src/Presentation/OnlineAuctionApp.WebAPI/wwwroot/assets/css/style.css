@@ -861,3 +861,137 @@ a {
     transform: rotate(-35deg);
     border-radius: 999px;
 }
+.dashboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px;
+    margin-bottom: 26px;
+}
+
+.dashboard-hero h1 {
+    margin: 0;
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.055em;
+}
+
+.dashboard-hero p {
+    max-width: 720px;
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.dashboard-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 26px 0 30px;
+}
+
+.summary-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.summary-card span {
+    display: block;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.summary-card strong {
+    color: var(--primary);
+    font-size: 38px;
+    line-height: 1;
+}
+
+.seller-create-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    margin-bottom: 34px;
+}
+
+.seller-tabs {
+    display: inline-flex;
+    gap: 8px;
+    padding: 6px;
+    margin: 10px 0 30px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.tab-button {
+    border: none;
+    border-radius: 12px;
+    padding: 11px 18px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 800;
+    transition: 0.2s ease;
+}
+
+.tab-button:hover {
+    color: var(--primary);
+    background: var(--surface-soft);
+}
+
+.tab-button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.compact-heading {
+    margin-top: 10px;
+    margin-bottom: 24px;
+}
+
+.compact-heading h2 {
+    font-size: 38px;
+}
+
+.seller-create-card input[type="file"] {
+    padding: 11px;
+}
+
+@media (max-width: 1050px) {
+    .dashboard-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashboard-hero {
+        align-items: start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 720px) {
+    .dashboard-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seller-tabs {
+        display: flex;
+        width: 100%;
+    }
+
+    .tab-button {
+        flex: 1;
+    }
+
+    .seller-create-card {
+        padding: 20px;
+    }
+}
