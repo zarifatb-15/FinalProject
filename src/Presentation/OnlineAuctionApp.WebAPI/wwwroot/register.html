@@ -1,85 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+  </head>
+  <body>
     <header class="navbar">
-    <div class="nav-shell">
+      <div class="nav-shell">
         <a href="/index.html" class="brand">
-            <span class="brand-mark">A</span>
-            <span>
-                <strong>Online Auction</strong>
-                <small>Live bidding marketplace</small>
-            </span>
+          <span class="brand-mark">A</span>
+          <span>
+            <strong>Online Auction</strong>
+            <small>Live bidding marketplace</small>
+          </span>
         </a>
 
         <nav class="nav-links">
-            <a href="/auctions.html">Auctions</a>
-            <a href="/seller-dashboard.html" id="sellerDashboardLink" class="hidden">Seller Dashboard</a>
-            <a href="/login.html" id="loginLink">Login</a>
-            <a href="/register.html" id="registerLink" class="btn btn-small btn-outline">Register</a>
-            <button id="logoutButton" class="btn btn-small btn-outline hidden">Logout</button>
+          <a href="/auctions.html">Auctions</a>
+          <a
+            href="/seller-dashboard.html"
+            id="sellerDashboardLink"
+            class="hidden"
+            >Seller Dashboard</a
+          >
+          <a href="/login.html" id="loginLink">Login</a>
+          <a
+            href="/register.html"
+            id="registerLink"
+            class="btn btn-small btn-outline"
+            >Register</a
+          >
+          <button id="logoutButton" class="btn btn-small btn-outline hidden">
+            Logout
+          </button>
         </nav>
-    </div>
-</header>
+      </div>
+    </header>
 
     <main class="auth-page">
-        <section class="auth-card auth-card-wide">
-            <span class="eyebrow">Create account</span>
-            <h1>Join the auction marketplace</h1>
-            <p>Register as a buyer or seller and start using the platform.</p>
+      <section class="auth-card auth-card-wide">
+        <span class="eyebrow">Create account</span>
+        <h1>Join the auction marketplace</h1>
+        <p>Register as a buyer or seller and start using the platform.</p>
 
-            <form id="registerForm" class="form form-grid">
-                <label>
-                    First Name
-                    <input type="text" id="firstName" required placeholder="Sara">
-                </label>
+        <form id="registerForm" class="form form-grid">
+          <label>
+            First Name
+            <input type="text" id="firstName" required placeholder="Sara" />
+          </label>
 
-                <label>
-                    Last Name
-                    <input type="text" id="lastName" required placeholder="Aliyeva">
-                </label>
+          <label>
+            Last Name
+            <input type="text" id="lastName" required placeholder="Aliyeva" />
+          </label>
 
-                <label>
-                    Username
-                    <input type="text" id="username" required placeholder="saraSeller">
-                </label>
+          <label>
+            Username
+            <input
+              type="text"
+              id="username"
+              required
+              placeholder="saraSeller"
+            />
+          </label>
 
-                <label>
-                    Email
-                    <input type="email" id="email" required placeholder="sara@example.com">
-                </label>
+          <label>
+            Email
+            <input
+              type="email"
+              id="email"
+              required
+              placeholder="sara@example.com"
+            />
+          </label>
 
-                <label>
-                    Role
-                    <select id="role" required>
-                        <option value="Buyer">Buyer</option>
-                        <option value="Seller">Seller</option>
-                    </select>
-                </label>
+          <label>
+            Role
+            <select id="role" required>
+              <option value="Buyer">Buyer</option>
+              <option value="Seller">Seller</option>
+            </select>
+          </label>
 
-                <label>
-                    Password
-                    <input type="password" id="registerPassword" required placeholder="Password123">
-                </label>
+          <label>
+            Password
+            <div class="password-field">
+              <input
+                type="password"
+                id="registerPassword"
+                required
+                placeholder="Password123"
+                autocomplete="new-password"
+              />
 
-                <label>
-                    Confirm Password
-                    <input type="password" id="confirmPassword" required placeholder="Password123">
-                </label>
+              <button
+                type="button"
+                class="password-toggle"
+                data-toggle-password="registerPassword"
+                aria-label="Show password"
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </label>
 
-                <button type="submit" class="btn btn-primary full-width form-span">Create Account</button>
-            </form>
+          <label>
+            Confirm Password
+            <div class="password-field">
+              <input
+                type="password"
+                id="confirmPassword"
+                required
+                placeholder="Password123"
+                autocomplete="new-password"
+              />
 
-            <p id="registerMessage" class="message"></p>
-        </section>
+              <button
+                type="button"
+                class="password-toggle"
+                data-toggle-password="confirmPassword"
+                aria-label="Show password"
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <button type="submit" class="btn btn-primary full-width form-span">
+            Create Account
+          </button>
+        </form>
+
+        <p id="registerMessage" class="message"></p>
+      </section>
     </main>
 
     <script src="/assets/js/api.js"></script>
     <script src="/assets/js/auth.js"></script>
-</body>
+  </body>
 </html>
