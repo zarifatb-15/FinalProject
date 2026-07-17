@@ -116,3 +116,23 @@ if (logoutButton) {
 }
 
 updateNavigation();
+
+document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const inputId = button.dataset.togglePassword;
+        const input = document.getElementById(inputId);
+
+        if (!input) {
+            return;
+        }
+
+        const isPassword = input.type === "password";
+
+        input.type = isPassword ? "text" : "password";
+        button.classList.toggle("is-visible", isPassword);
+        button.setAttribute(
+            "aria-label",
+            isPassword ? "Hide password" : "Show password"
+        );
+    });
+});

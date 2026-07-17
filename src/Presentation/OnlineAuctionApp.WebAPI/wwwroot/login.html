@@ -58,12 +58,29 @@
 
           <label>
             Password
-            <input
-              type="password"
-              id="password"
-              required
-              placeholder="Password123"
-            />
+            <div class="password-field">
+              <input
+                type="password"
+                id="password"
+                required
+                placeholder="Password123"
+                autocomplete="current-password"
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                data-toggle-password="password"
+                aria-label="Show password"
+              >
+                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
           </label>
 
           <button type="submit" class="btn btn-primary full-width">

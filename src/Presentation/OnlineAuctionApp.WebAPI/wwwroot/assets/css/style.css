@@ -607,3 +607,257 @@ a {
         grid-template-columns: 1fr;
     }
 }
+[x-cloak] {
+    display: none !important;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 18px;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.details-header h1 {
+    margin: 0;
+    font-size: clamp(38px, 5vw, 64px);
+    letter-spacing: -0.055em;
+}
+
+.details-header p {
+    max-width: 720px;
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.status-card {
+    min-width: 170px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+}
+
+.status-card span {
+    display: block;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.status-card strong {
+    color: var(--success);
+    font-size: 22px;
+}
+
+.details-layout {
+    display: grid;
+    grid-template-columns: 1.35fr 0.65fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.details-main-card,
+.bid-panel,
+.history-card,
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.details-main-card {
+    overflow: hidden;
+}
+
+.details-image {
+    height: 420px;
+    background:
+        linear-gradient(135deg, rgba(139, 94, 52, 0.16), rgba(31, 111, 120, 0.14)),
+        var(--surface-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.details-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.details-info-grid {
+    padding: 22px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.details-info-grid div {
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--surface-soft);
+}
+
+.details-info-grid span {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.details-info-grid strong {
+    font-size: 18px;
+}
+
+.highlight-price {
+    color: var(--primary);
+}
+
+.countdown-large {
+    color: var(--accent);
+}
+
+.bid-panel {
+    padding: 24px;
+    position: sticky;
+    top: 96px;
+}
+
+.bid-panel h2 {
+    margin-top: 0;
+}
+
+.notice-box {
+    padding: 18px;
+    border-radius: 18px;
+    background: var(--surface-soft);
+    color: var(--muted);
+}
+
+.history-section {
+    margin-top: 42px;
+}
+
+.history-card {
+    overflow: hidden;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+.history-table th {
+    background: var(--surface-soft);
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.history-table tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-state {
+    padding: 34px;
+}
+
+.empty-state p {
+    color: var(--muted);
+}
+
+@media (max-width: 1050px) {
+    .details-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .bid-panel {
+        position: static;
+    }
+
+    .details-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .details-header {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .details-image {
+        height: 280px;
+    }
+
+    .details-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-table {
+        font-size: 14px;
+    }
+}
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field input {
+    padding-right: 52px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    background: rgba(139, 94, 52, 0.08);
+}
+
+.eye-icon {
+    width: 19px;
+    height: 19px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+}
+
+.password-toggle.is-visible::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 2px;
+    background: var(--primary);
+    transform: rotate(-35deg);
+    border-radius: 999px;
+}
