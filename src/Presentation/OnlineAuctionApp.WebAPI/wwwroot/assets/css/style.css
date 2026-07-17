@@ -864,9 +864,16 @@ a {
 .dashboard-hero {
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: center;
     gap: 24px;
     margin-bottom: 26px;
+    padding: 34px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at top right, rgba(139, 94, 52, 0.12), transparent 34%),
+        linear-gradient(135deg, #fffdf9, #f4ede4);
+    box-shadow: var(--shadow);
 }
 
 .dashboard-hero h1 {
@@ -884,6 +891,10 @@ a {
     line-height: 1.7;
 }
 
+.dashboard-hero .btn {
+    flex-shrink: 0;
+}
+
 .dashboard-summary-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -892,11 +903,24 @@ a {
 }
 
 .summary-card {
+    position: relative;
+    overflow: hidden;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 22px;
     padding: 24px;
     box-shadow: var(--shadow);
+}
+
+.summary-card::after {
+    content: "";
+    position: absolute;
+    right: -28px;
+    top: -28px;
+    width: 86px;
+    height: 86px;
+    border-radius: 999px;
+    background: rgba(139, 94, 52, 0.08);
 }
 
 .summary-card span {
@@ -951,6 +975,7 @@ a {
 .tab-button.active {
     background: var(--primary);
     color: white;
+    box-shadow: 0 10px 24px rgba(139, 94, 52, 0.18);
 }
 
 .compact-heading {
@@ -964,6 +989,14 @@ a {
 
 .seller-create-card input[type="file"] {
     padding: 11px;
+}
+
+.auction-image span {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(139, 94, 52, 0.08);
+    color: var(--primary);
+    font-weight: 800;
 }
 
 @media (max-width: 1050px) {

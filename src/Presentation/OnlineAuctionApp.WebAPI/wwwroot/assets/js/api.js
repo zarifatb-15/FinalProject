@@ -1,3 +1,17 @@
+(function setupFavicon() {
+  const existingIcon = document.querySelector("link[rel='icon']");
+
+  if (existingIcon) {
+    return;
+  }
+
+  const favicon = document.createElement("link");
+  favicon.rel = "icon";
+  favicon.type = "image/svg+xml";
+  favicon.href = "/favicon.svg";
+
+  document.head.appendChild(favicon);
+})();
 async function apiRequest(url, options = {}) {
   const {
     skipJsonContentType = false,
