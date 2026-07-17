@@ -1,11 +1,24 @@
 async function apiRequest(url, options = {}) {
+  const {
+    skipJsonContentType = false,
+    headers: customHeaders = {},
+    ...fetchOptions
+  } = options;
+
+  const headers = {
+    ...customHeaders,
+  };
+
+  const isFormData = fetchOptions.body instanceof FormData;
+
+  if (!skipJsonContentType && !isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(url, {
     credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
+    ...fetchOptions,
+    headers,
   });
 
   const contentType = response.headers.get("content-type");
@@ -23,6 +36,7 @@ async function apiRequest(url, options = {}) {
 function formatPrice(value) {
   return `${Number(value).toFixed(2)} ₼`;
 }
+
 function parseApiDate(value) {
   if (!value) {
     return null;
@@ -34,7 +48,13 @@ function parseApiDate(value) {
 }
 
 function formatShortDate(value) {
-  return parseApiDate(value).toLocaleString("en-GB", {
+  const date = parseApiDate(value);
+
+  if (!date) {
+    return "";
+  }
+
+  return date.toLocaleString("en-GB", {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -51,7 +71,13 @@ function getImageUrl(auction) {
 }
 
 function calculateCountdown(endTime) {
-  const end = parseApiDate(endTime).getTime();
+  const date = parseApiDate(endTime);
+
+  if (!date) {
+    return "";
+  }
+
+  const end = date.getTime();
   const now = new Date().getTime();
   const diff = end - now;
 
