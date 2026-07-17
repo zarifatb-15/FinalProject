@@ -40,8 +40,6 @@ a {
 
 .nav-shell {
     width: 100%;
-    max-width: 1240px;
-    margin: 0 auto;
     padding: 16px 7%;
     display: flex;
     justify-content: space-between;
@@ -181,19 +179,17 @@ a {
     min-height: calc(100vh - 72px);
     padding: 70px 7%;
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 50px;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 64px;
     align-items: center;
-    max-width: 1240px;
-    margin: 0 auto;
 }
 
 .hero-content h1 {
-    max-width: 800px;
+    max-width: 760px;
     margin: 0;
-    font-size: clamp(44px, 7vw, 84px);
-    line-height: 0.98;
-    letter-spacing: -0.06em;
+    font-size: clamp(44px, 5.8vw, 76px);
+    line-height: 1;
+    letter-spacing: -0.055em;
 }
 
 .hero-content p {
@@ -283,8 +279,6 @@ a {
 }
 
 .market-section {
-    max-width: 1240px;
-    margin: 0 auto;
     padding: 70px 7%;
 }
 
