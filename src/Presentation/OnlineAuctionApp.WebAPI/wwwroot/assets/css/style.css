@@ -1028,3 +1028,39 @@ a {
         padding: 20px;
     }
 }
+.clickable-card {
+    cursor: pointer;
+}
+
+.empty-bid-history {
+    padding: 42px 24px;
+    background: var(--surface);
+    text-align: center;
+}
+
+.empty-bid-icon {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-soft);
+    color: var(--primary);
+    font-size: 28px;
+}
+
+.empty-bid-history h3 {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 22px;
+    letter-spacing: -0.03em;
+}
+
+.empty-bid-history p {
+    max-width: 460px;
+    margin: 0 auto;
+    color: var(--muted);
+    line-height: 1.6;
+}
