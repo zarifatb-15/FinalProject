@@ -10,6 +10,7 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
   </head>
+
   <body>
     <header class="navbar">
       <div class="nav-shell">
@@ -27,15 +28,17 @@
             href="/seller-dashboard.html"
             id="sellerDashboardLink"
             class="hidden"
-            >Seller Dashboard</a
           >
+            Seller Dashboard
+          </a>
           <a href="/login.html" id="loginLink">Login</a>
           <a
             href="/register.html"
             id="registerLink"
             class="btn btn-small btn-outline"
-            >Register</a
           >
+            Register
+          </a>
           <button id="logoutButton" class="btn btn-small btn-outline hidden">
             Logout
           </button>
@@ -80,19 +83,40 @@
           </section>
 
           <section class="dashboard-summary-grid">
-            <article class="summary-card">
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
               <span>Active Auctions</span>
               <strong x-text="summary.activeAuctionCount"></strong>
+              <small>View active listings →</small>
             </article>
 
-            <article class="summary-card">
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'completed'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'completed'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
               <span>Completed Auctions</span>
               <strong x-text="summary.completedAuctionCount"></strong>
+              <small>View completed listings →</small>
             </article>
 
-            <article class="summary-card">
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
               <span>Total Listings</span>
               <strong x-text="summary.totalAuctionCount"></strong>
+              <small>Browse all seller listings →</small>
             </article>
           </section>
 
@@ -186,6 +210,7 @@
               x-show="successMessage"
               x-text="successMessage"
             ></p>
+
             <p class="message error" x-show="formError" x-text="formError"></p>
           </section>
 
@@ -222,11 +247,8 @@
             <div class="auction-grid">
               <template x-for="auction in activeAuctions" :key="auction.id">
                 <article
-                  class="auction-card clickable-card"
-                  role="link"
-                  tabindex="0"
-                  @click="if (!$event.target.closest('a, button, input, label')) window.location.href = '/auction-details.html?id=' + auction.id"
-                  @keydown.enter="window.location.href = '/auction-details.html?id=' + auction.id"
+                  class="auction-card clickable-card seller-auction-card"
+                  :data-auction-id="auction.id"
                 >
                   <div class="auction-image">
                     <template
@@ -267,12 +289,7 @@
                         ></div>
                       </div>
 
-                      <a
-                        class="btn btn-secondary"
-                        :href="`/auction-details.html?id=${auction.id}`"
-                      >
-                        View
-                      </a>
+                      <span class="btn btn-secondary">View</span>
                     </div>
                   </div>
                 </article>
@@ -293,11 +310,8 @@
             <div class="auction-grid">
               <template x-for="auction in completedAuctions" :key="auction.id">
                 <article
-                  class="auction-card clickable-card"
-                  role="link"
-                  tabindex="0"
-                  @click="if (!$event.target.closest('a, button, input, label')) window.location.href = '/auction-details.html?id=' + auction.id"
-                  @keydown.enter="window.location.href = '/auction-details.html?id=' + auction.id"
+                  class="auction-card clickable-card seller-auction-card"
+                  :data-auction-id="auction.id"
                 >
                   <div class="auction-image">
                     <template
@@ -338,76 +352,7 @@
                         ></small>
                       </div>
 
-                      <a
-                        class="btn btn-secondary"
-                        :href="`/auction-details.html?id=${auction.id}`"
-                      >
-                        View
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              </template>
-            </div>
-          </section>
-          <section x-show="activeTab === 'completed'">
-            <div class="section-heading compact-heading">
-              <span class="eyebrow">Completed Listings</span>
-              <h2>Finished auctions</h2>
-            </div>
-
-            <template x-if="completedAuctions.length === 0">
-              <p class="message">You do not have completed auctions yet.</p>
-            </template>
-
-            <div class="auction-grid">
-              <template x-for="auction in completedAuctions" :key="auction.id">
-                <article class="auction-card">
-                  <div class="auction-image">
-                    <template
-                      x-if="auction.images && auction.images.length > 0"
-                    >
-                      <img
-                        :src="auction.images[0].imageUrl"
-                        :alt="auction.title"
-                      />
-                    </template>
-
-                    <template
-                      x-if="!auction.images || auction.images.length === 0"
-                    >
-                      <span>No image</span>
-                    </template>
-                  </div>
-
-                  <div class="auction-body">
-                    <div class="auction-meta">
-                      <span x-text="auction.categoryName"></span>
-                      <span x-text="auction.status"></span>
-                    </div>
-
-                    <h3 x-text="auction.title"></h3>
-                    <p x-text="auction.description"></p>
-
-                    <div class="auction-footer">
-                      <div>
-                        <span class="muted">Final Price</span>
-                        <div
-                          class="current-price"
-                          x-text="formatPriceValue(auction.currentPrice)"
-                        ></div>
-                        <small
-                          class="muted"
-                          x-text="auction.winnerUsername ? `Winner: ${auction.winnerUsername}` : 'No winner'"
-                        ></small>
-                      </div>
-
-                      <a
-                        class="btn btn-secondary"
-                        :href="`/auction-details.html?id=${auction.id}`"
-                      >
-                        View
-                      </a>
+                      <span class="btn btn-secondary">View</span>
                     </div>
                   </div>
                 </article>

@@ -488,6 +488,7 @@ a {
 }
 
 .auction-card {
+    display: block;
     overflow: hidden;
     transition: 0.2s ease;
 }
@@ -499,14 +500,33 @@ a {
 
 .auction-image {
     height: 210px;
-    background: var(--surface-soft);
+    background:
+        radial-gradient(circle at top right, rgba(139, 94, 52, 0.12), transparent 34%),
+        linear-gradient(135deg, #fbf7f1, #efe7dc);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--primary);
     font-weight: 800;
 }
+.auction-image span {
+    min-width: 118px;
+    min-height: 58px;
+    padding: 10px 16px;
+    border-radius: 18px;
+    background: rgba(139, 94, 52, 0.08);
+    color: var(--primary);
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
 
+.auction-image span::before {
+    content: "📷";
+    font-size: 18px;
+}
 .auction-image img {
     width: 100%;
     height: 100%;
@@ -991,14 +1011,6 @@ a {
     padding: 11px;
 }
 
-.auction-image span {
-    padding: 10px 14px;
-    border-radius: 999px;
-    background: rgba(139, 94, 52, 0.08);
-    color: var(--primary);
-    font-weight: 800;
-}
-
 @media (max-width: 1050px) {
     .dashboard-summary-grid {
         grid-template-columns: 1fr 1fr;
@@ -1063,4 +1075,29 @@ a {
     margin: 0 auto;
     color: var(--muted);
     line-height: 1.6;
+}
+.summary-card-clickable {
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.summary-card-clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px rgba(31, 41, 51, 0.12);
+    border-color: rgba(139, 94, 52, 0.35);
+}
+
+.summary-card-clickable strong {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.summary-card-clickable small {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 13px;
 }

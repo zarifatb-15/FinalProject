@@ -59,7 +59,8 @@ function renderAuctionCard(auction) {
       : auction.description;
 
   return `
-<article class="auction-card clickable-card" data-auction-id="${auction.id}">            <div class="auction-image">
+<article class="auction-card clickable-card" data-auction-id="${auction.id}">       
+     <div class="auction-image">
                 ${
                   imageUrl
                     ? `<img src="${imageUrl}" alt="${auction.title}">`
