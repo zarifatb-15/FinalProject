@@ -95,11 +95,112 @@ function markActiveNavigation() {
     }
   });
 }
+function formatAccountName(user) {
+  const rawName = user?.username || user?.email?.split("@")[0] || "Account";
+
+  return rawName
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function getUserInitial(user) {
+  const name = formatAccountName(user);
+  return name.charAt(0).toUpperCase();
+}
+
+function getPrimaryRole(user) {
+  if (!user?.roles || user.roles.length === 0) {
+    return "User";
+  }
+
+  return user.roles[0];
+}
+
+async function renderAccountPreview() {
+  const navLinks = document.querySelector(".nav-links");
+
+  if (!navLinks || typeof apiRequest !== "function") {
+    return;
+  }
+
+  document.getElementById("accountPreview")?.remove();
+
+  let user;
+
+  try {
+    user = await apiRequest("/api/Auth/me");
+  } catch {
+    return;
+  }
+
+  if (!user) {
+    return;
+  }
+
+  const accountPreview = document.createElement("div");
+  accountPreview.id = "accountPreview";
+  accountPreview.className = "account-preview";
+
+  accountPreview.innerHTML = `
+    <button type="button" class="account-chip" id="accountChipButton">
+      <span class="account-avatar" id="accountAvatar"></span>
+      <span class="account-chip-text">
+        <strong id="accountDisplayName"></strong>
+        <small id="accountRoleName"></small>
+      </span>
+    </button>
+
+    <div class="account-dropdown hidden" id="accountDropdown">
+      <div class="account-dropdown-header">
+        <span class="account-avatar large" id="accountDropdownAvatar"></span>
+        <div>
+          <strong id="accountDropdownName"></strong>
+          <small id="accountDropdownEmail"></small>
+        </div>
+      </div>
+
+      <div class="account-dropdown-meta">
+        <span id="accountDropdownRole"></span>
+        <span>Signed in</span>
+      </div>
+    </div>
+  `;
+
+  const logoutButton = document.getElementById("logoutButton");
+  navLinks.insertBefore(accountPreview, logoutButton || null);
+
+  const displayName = formatAccountName(user);
+  const roleName = getPrimaryRole(user);
+  const initial = getUserInitial(user);
+
+  document.getElementById("accountAvatar").textContent = initial;
+  document.getElementById("accountDropdownAvatar").textContent = initial;
+  document.getElementById("accountDisplayName").textContent = displayName;
+  document.getElementById("accountRoleName").textContent = `${roleName} account`;
+  document.getElementById("accountDropdownName").textContent = displayName;
+  document.getElementById("accountDropdownEmail").textContent =
+    user.email || "No email available";
+  document.getElementById("accountDropdownRole").textContent = roleName;
+
+  document.getElementById("accountChipButton").addEventListener("click", () => {
+    document.getElementById("accountDropdown").classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".account-preview")) {
+      document.getElementById("accountDropdown")?.classList.add("hidden");
+    }
+  });
+}
 
 function initializeLayout() {
   renderTopStrip();
   renderSiteFooter();
   markActiveNavigation();
+  renderAccountPreview();
 }
 
 if (document.readyState === "loading") {
