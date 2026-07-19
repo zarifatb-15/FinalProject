@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Dashboard | Online Auction</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="nav-shell">
+        <a href="/index.html" class="brand">
+          <span class="brand-mark">A</span>
+          <span>
+            <strong>Online Auction</strong>
+            <small>Live bidding marketplace</small>
+          </span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="/auctions.html">Auctions</a>
+          <a
+            href="/seller-dashboard.html"
+            id="sellerDashboardLink"
+            class="hidden"
+          >
+            Seller Dashboard
+          </a>
+          <a href="/login.html" id="loginLink">Login</a>
+          <a
+            href="/register.html"
+            id="registerLink"
+            class="btn btn-small btn-outline"
+          >
+            Register
+          </a>
+          <button id="logoutButton" class="btn btn-small btn-outline hidden">
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page" x-data="sellerDashboardPage()" x-init="init()" x-cloak>
+      <template x-if="loading">
+        <p class="message">Loading seller dashboard...</p>
+      </template>
+
+      <template x-if="error">
+        <section class="empty-state">
+          <h1>Seller access required</h1>
+          <p x-text="error"></p>
+          <a href="/login.html" class="btn btn-primary">Login as Seller</a>
+        </section>
+      </template>
+
+      <template x-if="!loading && !error">
+        <div>
+          <section class="dashboard-hero">
+            <div>
+              <span class="eyebrow">Seller Dashboard</span>
+              <h1>Manage your auction listings</h1>
+              <p>
+                Create new auction listings, upload item photos, and track
+                active and completed auctions from one place.
+              </p>
+            </div>
+
+            <button
+              class="btn btn-primary"
+              type="button"
+              @click="showCreateForm = !showCreateForm"
+            >
+              <span
+                x-text="showCreateForm ? 'Close Form' : 'Create Auction'"
+              ></span>
+            </button>
+          </section>
+
+          <section class="dashboard-summary-grid">
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
+              <span>Active Auctions</span>
+              <strong x-text="summary.activeAuctionCount"></strong>
+              <small>View active listings →</small>
+            </article>
+
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'completed'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'completed'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
+              <span>Completed Auctions</span>
+              <strong x-text="summary.completedAuctionCount"></strong>
+              <small>View completed listings →</small>
+            </article>
+
+            <article
+              class="summary-card summary-card-clickable"
+              role="button"
+              tabindex="0"
+              @click="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+              @keydown.enter="activeTab = 'active'; $nextTick(() => document.querySelector('.seller-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))"
+            >
+              <span>Total Listings</span>
+              <strong x-text="summary.totalAuctionCount"></strong>
+              <small>Browse all seller listings →</small>
+            </article>
+          </section>
+
+          <section class="seller-create-card" x-show="showCreateForm">
+            <div class="section-heading">
+              <span class="eyebrow">New Listing</span>
+              <h2>Create auction listing</h2>
+              <p>
+                Add the item details, select a category, set the starting price
+                and choose the closing deadline.
+              </p>
+            </div>
+
+            <form class="form form-grid" @submit.prevent="createAuction">
+              <label>
+                Title
+                <input
+                  type="text"
+                  x-model="createForm.title"
+                  required
+                  placeholder="MacBook Pro M3"
+                />
+              </label>
+
+              <label>
+                Category
+                <select x-model="createForm.categoryId" required>
+                  <option value="">Select category</option>
+                  <template x-for="category in categories" :key="category.id">
+                    <option
+                      :value="category.id"
+                      x-text="category.name"
+                    ></option>
+                  </template>
+                </select>
+              </label>
+
+              <label>
+                Starting Price
+                <input
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  x-model="createForm.startingPrice"
+                  required
+                  placeholder="1200"
+                />
+              </label>
+
+              <label>
+                End Time
+                <input
+                  type="datetime-local"
+                  x-model="createForm.endTime"
+                  required
+                />
+              </label>
+
+              <label class="form-span">
+                Description
+                <input
+                  type="text"
+                  x-model="createForm.description"
+                  required
+                  placeholder="Excellent condition, original box included"
+                />
+              </label>
+
+              <label class="form-span">
+                Item Photo
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  @change="handleImageChange"
+                />
+              </label>
+
+              <button
+                type="submit"
+                class="btn btn-primary full-width form-span"
+                :disabled="creating"
+              >
+                <span
+                  x-text="creating ? 'Creating auction...' : 'Create Listing'"
+                ></span>
+              </button>
+            </form>
+
+            <p
+              class="message success"
+              x-show="successMessage"
+              x-text="successMessage"
+            ></p>
+
+            <p class="message error" x-show="formError" x-text="formError"></p>
+          </section>
+
+          <section class="seller-tabs">
+            <button
+              type="button"
+              class="tab-button"
+              :class="{ 'active': activeTab === 'active' }"
+              @click="activeTab = 'active'"
+            >
+              Active Auctions
+            </button>
+
+            <button
+              type="button"
+              class="tab-button"
+              :class="{ 'active': activeTab === 'completed' }"
+              @click="activeTab = 'completed'"
+            >
+              Completed Auctions
+            </button>
+          </section>
+
+          <section x-show="activeTab === 'active'">
+            <div class="section-heading compact-heading">
+              <span class="eyebrow">Active Listings</span>
+              <h2>Currently running auctions</h2>
+            </div>
+
+            <template x-if="activeAuctions.length === 0">
+              <p class="message">You do not have active auctions yet.</p>
+            </template>
+
+            <div class="auction-grid">
+              <template x-for="auction in activeAuctions" :key="auction.id">
+                <article
+                  class="auction-card clickable-card seller-auction-card"
+                  :data-auction-id="auction.id"
+                >
+                  <div class="auction-image">
+                    <template
+                      x-if="auction.images && auction.images.length > 0"
+                    >
+                      <img
+                        :src="auction.images[0].imageUrl"
+                        :alt="auction.title"
+                      />
+                    </template>
+
+                    <template
+                      x-if="!auction.images || auction.images.length === 0"
+                    >
+                      <span>No image</span>
+                    </template>
+                  </div>
+
+                  <div class="auction-body">
+                    <div class="auction-meta">
+                      <span x-text="auction.categoryName"></span>
+                      <span
+                        class="countdown"
+                        :data-end-time="auction.endTime"
+                        x-text="calculateCountdown(auction.endTime)"
+                      ></span>
+                    </div>
+
+                    <h3 x-text="auction.title"></h3>
+                    <p x-text="auction.description"></p>
+
+                    <div class="auction-footer">
+                      <div>
+                        <span class="muted">Current Bid</span>
+                        <div
+                          class="current-price"
+                          x-text="formatPriceValue(auction.currentPrice)"
+                        ></div>
+                      </div>
+
+                      <span class="btn btn-secondary">View</span>
+                    </div>
+                  </div>
+                </article>
+              </template>
+            </div>
+          </section>
+
+          <section x-show="activeTab === 'completed'">
+            <div class="section-heading compact-heading">
+              <span class="eyebrow">Completed Listings</span>
+              <h2>Finished auctions</h2>
+            </div>
+
+            <template x-if="completedAuctions.length === 0">
+              <p class="message">You do not have completed auctions yet.</p>
+            </template>
+
+            <div class="auction-grid">
+              <template x-for="auction in completedAuctions" :key="auction.id">
+                <article
+                  class="auction-card clickable-card seller-auction-card"
+                  :data-auction-id="auction.id"
+                >
+                  <div class="auction-image">
+                    <template
+                      x-if="auction.images && auction.images.length > 0"
+                    >
+                      <img
+                        :src="auction.images[0].imageUrl"
+                        :alt="auction.title"
+                      />
+                    </template>
+
+                    <template
+                      x-if="!auction.images || auction.images.length === 0"
+                    >
+                      <span>No image</span>
+                    </template>
+                  </div>
+
+                  <div class="auction-body">
+                    <div class="auction-meta">
+                      <span x-text="auction.categoryName"></span>
+                      <span x-text="auction.status"></span>
+                    </div>
+
+                    <h3 x-text="auction.title"></h3>
+                    <p x-text="auction.description"></p>
+
+                    <div class="auction-footer">
+                      <div>
+                        <span class="muted">Final Price</span>
+                        <div
+                          class="current-price"
+                          x-text="formatPriceValue(auction.currentPrice)"
+                        ></div>
+                        <small
+                          class="muted"
+                          x-text="auction.winnerUsername ? `Winner: ${auction.winnerUsername}` : 'No winner'"
+                        ></small>
+                      </div>
+
+                      <span class="btn btn-secondary">View</span>
+                    </div>
+                  </div>
+                </article>
+              </template>
+            </div>
+          </section>
+        </div>
+      </template>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
+    <script src="/assets/js/seller-dashboard.js"></script>
+  </body>
+</html>
