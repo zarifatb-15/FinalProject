@@ -59,8 +59,8 @@ function renderAuctionCard(auction) {
       : auction.description;
 
   return `
-<article class="auction-card clickable-card" data-auction-id="${auction.id}">       
-     <div class="auction-image">
+        <a class="auction-card clickable-card" href="/auction-details.html?id=${auction.id}">
+            <div class="auction-image">
                 ${
                   imageUrl
                     ? `<img src="${imageUrl}" alt="${auction.title}">`
@@ -85,12 +85,12 @@ function renderAuctionCard(auction) {
                         <div class="current-price">${formatPrice(auction.currentPrice)}</div>
                     </div>
 
-                    <a href="/auction-details.html?id=${auction.id}" class="btn btn-secondary">
+                    <span class="btn btn-secondary">
                         View Details
-                    </a>
+                    </span>
                 </div>
             </div>
-        </article>
+        </a>
     `;
 }
 
@@ -143,21 +143,5 @@ if (clearFiltersButton) {
 
 loadCategories();
 loadAuctions();
-if (auctionGrid) {
-  auctionGrid.addEventListener("click", (event) => {
-    const clickedAction = event.target.closest("a, button");
 
-    if (clickedAction) {
-      return;
-    }
-
-    const card = event.target.closest(".clickable-card[data-auction-id]");
-
-    if (!card) {
-      return;
-    }
-
-    window.location.href = `/auction-details.html?id=${card.dataset.auctionId}`;
-  });
-}
 setInterval(refreshCountdowns, 30000);
