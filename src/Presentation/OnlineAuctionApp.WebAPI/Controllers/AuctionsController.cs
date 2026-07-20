@@ -10,20 +10,21 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuctionsController : ControllerBase
+public class AuctionsController : BaseApiController
 {
     private readonly IAuctionService _auctionService;
     private readonly IAuctionImageService _auctionImageService;
     private readonly IBidService _bidService;
     private readonly IAuctionClosingService _auctionClosingService;
 
-    public AuctionsController(IAuctionService auctionService,
+    public AuctionsController(
+        IAuctionService auctionService,
         IAuctionImageService auctionImageService,
         IBidService bidService,
         IAuctionClosingService auctionClosingService)
     {
-        _auctionImageService = auctionImageService;
         _auctionService = auctionService;
+        _auctionImageService = auctionImageService;
         _bidService = bidService;
         _auctionClosingService = auctionClosingService;
     }
@@ -34,11 +35,11 @@ public class AuctionsController : ControllerBase
         try
         {
             var auctions = await _auctionService.GetAllAsync(filter);
-            return Ok(auctions);
+            return ApiSuccess(auctions);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -48,11 +49,11 @@ public class AuctionsController : ControllerBase
         try
         {
             var auction = await _auctionService.GetByIdAsync(id);
-            return Ok(auction);
+            return ApiSuccess(auction);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return ApiNotFound(ex.Message);
         }
     }
 
@@ -61,16 +62,18 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> Create([FromBody] AuctionCreateDto dto)
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         try
         {
             var auction = await _auctionService.CreateAsync(dto, sellerId);
-            return CreatedAtAction(nameof(GetById), new { id = auction.Id }, auction);
+            return ApiCreated(nameof(GetById), new { id = auction.Id }, auction);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -79,10 +82,12 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> GetMyAuctions()
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         var auctions = await _auctionService.GetBySellerIdAsync(sellerId);
-        return Ok(auctions);
+        return ApiSuccess(auctions);
     }
 
     [Authorize(Roles = "Seller")]
@@ -90,10 +95,12 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> GetMyActiveAuctions()
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         var auctions = await _auctionService.GetActiveBySellerIdAsync(sellerId);
-        return Ok(auctions);
+        return ApiSuccess(auctions);
     }
 
     [Authorize(Roles = "Seller")]
@@ -101,10 +108,12 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> GetMyCompletedAuctions()
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         var auctions = await _auctionService.GetCompletedBySellerIdAsync(sellerId);
-        return Ok(auctions);
+        return ApiSuccess(auctions);
     }
 
     [Authorize(Roles = "Seller")]
@@ -112,22 +121,30 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> GetSellerDashboardSummary()
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         var summary = await _auctionService.GetSellerDashboardSummaryAsync(sellerId);
-        return Ok(summary);
+        return ApiSuccess(summary);
     }
 
     [Authorize(Roles = "Seller")]
     [HttpPost("{auctionId}/images")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadImage(Guid auctionId, [FromForm] AuctionImageUploadRequest request)
+    public async Task<IActionResult> UploadImage(
+        Guid auctionId,
+        [FromForm] AuctionImageUploadRequest request)
     {
         if (!User.TryGetUserId(out var sellerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         if (request.Image is null || request.Image.Length == 0)
-            return BadRequest(new { message = "Image is required." });
+        {
+            return ApiBadRequest("Image is required.");
+        }
 
         try
         {
@@ -139,15 +156,20 @@ public class AuctionsController : ControllerBase
                 request.Image.FileName,
                 sellerId);
 
-            return Ok(image);
+            return ApiSuccess(image);
         }
         catch (UnauthorizedAccessException ex)
         {
-            return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
+            return ApiForbidden(ex.Message);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            if (ex.Message == "Auction not found.")
+            {
+                return ApiNotFound(ex.Message);
+            }
+
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -156,16 +178,23 @@ public class AuctionsController : ControllerBase
     public async Task<IActionResult> PlaceBid(Guid auctionId, [FromBody] BidCreateDto dto)
     {
         if (!User.TryGetUserId(out var buyerId))
-            return Unauthorized(new { message = "Invalid user token." });
+        {
+            return ApiUnauthorized("Invalid user token.");
+        }
 
         try
         {
             var bid = await _bidService.PlaceBidAsync(auctionId, buyerId, dto);
-            return Ok(bid);
+            return ApiSuccess(bid);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            if (ex.Message == "Auction not found.")
+            {
+                return ApiNotFound(ex.Message);
+            }
+
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -175,11 +204,11 @@ public class AuctionsController : ControllerBase
         try
         {
             var bids = await _bidService.GetByAuctionIdAsync(auctionId);
-            return Ok(bids);
+            return ApiSuccess(bids);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return ApiNotFound(ex.Message);
         }
     }
 
@@ -189,7 +218,7 @@ public class AuctionsController : ControllerBase
     {
         var closedCount = await _auctionClosingService.CloseExpiredAuctionsAsync();
 
-        return Ok(new
+        return ApiSuccess(new
         {
             closedCount
         });
@@ -202,14 +231,16 @@ public class AuctionsController : ControllerBase
         try
         {
             var auction = await _auctionClosingService.CloseAuctionAsync(auctionId);
-            return Ok(auction);
+            return ApiSuccess(auction);
         }
         catch (InvalidOperationException ex)
         {
             if (ex.Message == "Auction not found.")
-                return NotFound(new { message = ex.Message });
+            {
+                return ApiNotFound(ex.Message);
+            }
 
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 }
