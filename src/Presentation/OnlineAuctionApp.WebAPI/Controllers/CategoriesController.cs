@@ -7,7 +7,7 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController : ControllerBase
+public class CategoriesController : BaseApiController
 {
     private readonly ICategoryService _categoryService;
 
@@ -20,7 +20,7 @@ public class CategoriesController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var categories = await _categoryService.GetAllAsync();
-        return Ok(categories);
+        return ApiSuccess(categories);
     }
 
     [HttpGet("{id}")]
@@ -29,11 +29,11 @@ public class CategoriesController : ControllerBase
         try
         {
             var category = await _categoryService.GetByIdAsync(id);
-            return Ok(category);
+            return ApiSuccess(category);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            return ApiNotFound(ex.Message);
         }
     }
 
@@ -44,11 +44,11 @@ public class CategoriesController : ControllerBase
         try
         {
             var category = await _categoryService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+            return ApiCreated(nameof(GetById), new { id = category.Id }, category);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -59,11 +59,16 @@ public class CategoriesController : ControllerBase
         try
         {
             var category = await _categoryService.UpdateAsync(id, dto);
-            return Ok(category);
+            return ApiSuccess(category);
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            if (ex.Message == "Category not found.")
+            {
+                return ApiNotFound(ex.Message);
+            }
+
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -74,16 +79,16 @@ public class CategoriesController : ControllerBase
         try
         {
             await _categoryService.DeleteAsync(id);
-            return NoContent();
+            return ApiDeleted("Category deleted successfully.");
         }
         catch (InvalidOperationException ex)
         {
             if (ex.Message == "Category not found.")
             {
-                return NotFound(new { message = ex.Message });
+                return ApiNotFound(ex.Message);
             }
 
-            return Conflict(new { message = ex.Message });
+            return ApiConflict(ex.Message);
         }
     }
 }

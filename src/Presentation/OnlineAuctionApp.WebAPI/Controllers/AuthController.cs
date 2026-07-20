@@ -9,7 +9,7 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
 
@@ -24,10 +24,9 @@ public class AuthController : ControllerBase
         try
         {
             var token = await _authService.RegisterAsync(dto);
-
             SetAccessTokenCookie(token);
 
-            return Ok(new
+            return ApiSuccess(new
             {
                 message = "Registered successfully.",
                 expiration = token.Expiration
@@ -35,7 +34,7 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 
@@ -45,10 +44,9 @@ public class AuthController : ControllerBase
         try
         {
             var token = await _authService.LoginAsync(dto);
-
             SetAccessTokenCookie(token);
 
-            return Ok(new
+            return ApiSuccess(new
             {
                 message = "Logged in successfully.",
                 expiration = token.Expiration
@@ -56,7 +54,7 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return Unauthorized(new { message = ex.Message });
+            return ApiUnauthorized(ex.Message);
         }
     }
 
@@ -71,7 +69,7 @@ public class AuthController : ControllerBase
             .Select(role => role.Value)
             .ToList();
 
-        return Ok(new
+        return ApiSuccess(new
         {
             userId,
             username,
@@ -99,13 +97,14 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete(
-            AuthCookieNames.AccessToken,
-            new CookieOptions
-            {
-                Path = "/"
-            });
+        Response.Cookies.Delete(AuthCookieNames.AccessToken, new CookieOptions
+        {
+            Path = "/"
+        });
 
-        return Ok(new { message = "Logged out successfully." });
+        return ApiSuccess(new
+        {
+            message = "Logged out successfully."
+        });
     }
 }
