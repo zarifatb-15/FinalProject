@@ -41,13 +41,26 @@ public class CategoryService : ICategoryService
 
     public async Task<CategoryReturnDto> CreateAsync(CategoryCreateDto dto)
     {
+        var name = dto.Name.Trim();
+        var description = dto.Description.Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new InvalidOperationException("Category name is required.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new InvalidOperationException("Category description is required.");
+
         var exists = await _context.Categories
-            .AnyAsync(category => category.Name.ToLower() == dto.Name.ToLower());
+            .AnyAsync(category => category.Name.ToLower() == name.ToLower());
 
         if (exists)
             throw new InvalidOperationException("Category already exists.");
 
-        var category = _mapper.Map<Category>(dto);
+        var category = new Category
+        {
+            Name = name,
+            Description = description
+        };
 
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -62,7 +75,25 @@ public class CategoryService : ICategoryService
         if (category is null)
             throw new InvalidOperationException("Category not found.");
 
-        _mapper.Map(dto, category);
+        var name = dto.Name.Trim();
+        var description = dto.Description.Trim();
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new InvalidOperationException("Category name is required.");
+
+        if (string.IsNullOrWhiteSpace(description))
+            throw new InvalidOperationException("Category description is required.");
+
+        var nameExists = await _context.Categories
+            .AnyAsync(existingCategory =>
+                existingCategory.Id != id &&
+                existingCategory.Name.ToLower() == name.ToLower());
+
+        if (nameExists)
+            throw new InvalidOperationException("Category already exists.");
+
+        category.Name = name;
+        category.Description = description;
         category.UpdatedDate = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
@@ -72,10 +103,20 @@ public class CategoryService : ICategoryService
 
     public async Task DeleteAsync(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await _context.Categories
+            .Include(category => category.Auctions)
+            .FirstOrDefaultAsync(category => category.Id == id);
 
         if (category is null)
+        {
             throw new InvalidOperationException("Category not found.");
+        }
+
+        if (category.Auctions.Any())
+        {
+            throw new InvalidOperationException(
+                "This category cannot be deleted because it has auction listings.");
+        }
 
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync();

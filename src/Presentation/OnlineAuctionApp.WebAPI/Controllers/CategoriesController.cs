@@ -37,7 +37,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Seller")]
+    [Authorize(Roles = "Seller,Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CategoryCreateDto dto)
     {
@@ -52,7 +52,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Seller")]
+    [Authorize(Roles = "Seller,Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
     {
@@ -67,7 +67,7 @@ public class CategoriesController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Seller")]
+    [Authorize(Roles = "Seller,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -78,7 +78,12 @@ public class CategoriesController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { message = ex.Message });
+            if (ex.Message == "Category not found.")
+            {
+                return NotFound(new { message = ex.Message });
+            }
+
+            return Conflict(new { message = ex.Message });
         }
     }
 }
