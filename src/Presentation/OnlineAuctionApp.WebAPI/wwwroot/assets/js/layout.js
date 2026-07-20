@@ -139,6 +139,19 @@ async function renderAccountPreview() {
   if (!user) {
     return;
   }
+  if (user.roles && user.roles.includes("Admin")) {
+  if (!document.getElementById("adminDashboardLink")) {
+    const adminLink = document.createElement("a");
+    adminLink.href = "/admin-dashboard.html";
+    adminLink.id = "adminDashboardLink";
+    adminLink.textContent = "Admin Dashboard";
+
+    const auctionsLink = navLinks.querySelector('a[href="/auctions.html"]');
+    navLinks.insertBefore(adminLink, auctionsLink || navLinks.firstChild);
+  }
+
+  markActiveNavigation();
+}
 
   const accountPreview = document.createElement("div");
   accountPreview.id = "accountPreview";

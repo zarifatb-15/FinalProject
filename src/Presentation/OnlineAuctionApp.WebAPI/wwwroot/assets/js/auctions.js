@@ -57,27 +57,32 @@ function renderAuctionCard(auction) {
     auction.description.length > 100
       ? `${auction.description.slice(0, 100)}...`
       : auction.description;
+  const safeTitle = escapeHtml(auction.title);
+  const safeCategory = escapeHtml(auction.categoryName);
+  const safeDescription = escapeHtml(description);
+  const safeImageUrl = escapeHtml(imageUrl);
+  const safeEndTime = escapeHtml(auction.endTime);
 
   return `
-        <a class="auction-card clickable-card" href="/auction-details.html?id=${auction.id}">
+        <a class="auction-card clickable-card" href="/auction-details.html?id=${escapeHtml(auction.id)}">
             <div class="auction-image">
                 ${
                   imageUrl
-                    ? `<img src="${imageUrl}" alt="${auction.title}">`
+                    ? `<img src="${safeImageUrl}" alt="${safeTitle}">`
                     : `<span>No image uploaded</span>`
                 }
             </div>
 
             <div class="auction-body">
                 <div class="auction-meta">
-                    <span>${auction.categoryName}</span>
-                    <span class="countdown" data-end-time="${auction.endTime}">
+                    <span>${safeCategory}</span>
+                    <span class="countdown" data-end-time="${safeEndTime}">
                         ${calculateCountdown(auction.endTime)}
                     </span>
                 </div>
 
-                <h3>${auction.title}</h3>
-                <p>${description}</p>
+                <h3>${safeTitle}</h3>
+                <p>${safeDescription}</p>
 
                 <div class="auction-footer">
                     <div>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Online Auction</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+  </head>
+
+  <body class="admin-only-page">
+    <main class="admin-shell">
+      <aside class="admin-sidebar">
+        <a href="/index.html" class="admin-brand">
+          <span class="brand-mark">A</span>
+          <span>
+            <strong>Online Auction</strong>
+            <small>Admin workspace</small>
+          </span>
+        </a>
+
+        <nav class="admin-menu">
+          <a href="#overview" class="active">Dashboard</a>
+          <a href="#auctions">Auctions</a>
+          <a href="#users">Users</a>
+          <a href="#system">System Status</a>
+        </nav>
+
+        <div class="admin-sidebar-note">
+          <strong>Secure access</strong>
+          <p>Only administrator accounts can manage platform activity.</p>
+        </div>
+      </aside>
+
+      <section class="admin-main-area">
+        <header class="admin-topbar">
+          <div class="admin-search-box">
+            <span>⌕</span>
+            <input type="text" placeholder="Search dashboard..." disabled />
+          </div>
+
+          <div class="admin-topbar-actions">
+            <a href="/auctions.html" class="btn btn-secondary">Marketplace</a>
+            <button type="button" class="btn btn-primary" id="refreshAdminButton">
+              Refresh
+            </button>
+            <button type="button" class="btn btn-outline" id="adminLogoutButton">
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <section id="adminAccessError" class="admin-access-card hidden">
+          <span class="eyebrow">Admin Access</span>
+          <h1>Admin access required</h1>
+          <p>You need to login with an administrator account to view this page.</p>
+          <a href="/login.html" class="btn btn-primary">Login as Admin</a>
+        </section>
+
+        <section id="adminDashboardContent" class="hidden">
+          <section class="admin-welcome-card" id="overview">
+            <div>
+              <span class="eyebrow">Admin Control Center</span>
+              <h1>Welcome back, <span id="adminName">Admin</span></h1>
+              <p>
+                Monitor users, auction listings, bids, winners and moderation
+                actions from one professional dashboard.
+              </p>
+            </div>
+
+            <div class="admin-profile-card">
+              <span class="admin-avatar">A</span>
+              <div>
+                <strong>Administrator</strong>
+                <small>Full platform access</small>
+              </div>
+            </div>
+          </section>
+
+          <section id="adminSummaryGrid" class="admin-stat-grid"></section>
+
+          <section class="admin-dashboard-grid">
+            <section class="admin-panel admin-panel-large" id="auctions">
+              <div class="admin-panel-header">
+                <div>
+                  <span class="eyebrow">Auction Management</span>
+                  <h2>All auctions</h2>
+                  <p>
+                    Review sellers, winners, bid counts, deadlines and cancel
+                    active auctions when moderation is required.
+                  </p>
+                </div>
+              </div>
+
+              <div class="table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Auction</th>
+                      <th>Seller</th>
+                      <th>Status</th>
+                      <th>Price</th>
+                      <th>Bids</th>
+                      <th>Deadline</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminAuctionsTable"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <aside class="admin-right-column">
+              <section class="admin-panel" id="system">
+                <span class="eyebrow">System</span>
+                <h2>Platform health</h2>
+
+                <div class="admin-health-list">
+                  <div>
+                    <span>Authentication</span>
+                    <strong>Active</strong>
+                  </div>
+                  <div>
+                    <span>Role authorization</span>
+                    <strong>Protected</strong>
+                  </div>
+                  <div>
+                    <span>Notifications</span>
+                    <strong>Enabled</strong>
+                  </div>
+                  <div>
+                    <span>Auto closing</span>
+                    <strong>Running</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="admin-panel">
+                <span class="eyebrow">Moderation</span>
+                <h2>Admin actions</h2>
+                <p class="admin-muted">
+                  Cancelled auctions are not deleted from the database. They are
+                  hidden from public marketplace lists and remain visible for
+                  admin review.
+                </p>
+              </section>
+            </aside>
+          </section>
+
+          <section class="admin-panel" id="users">
+            <div class="admin-panel-header">
+              <div>
+                <span class="eyebrow">User Accounts</span>
+                <h2>Registered users</h2>
+                <p>Buyer, seller and administrator accounts in the system.</p>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTable"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <p id="adminMessage" class="message"></p>
+      </section>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-dashboard.js"></script>
+  </body>
+</html>
