@@ -110,9 +110,9 @@ function renderNotifications() {
         <button
           type="button"
           class="notification-item ${item.isRead ? "" : "unread"}"
-          data-notification-id="${item.id}"
+          data-notification-id="${escapeHtml(item.id)}"
         >
-          <span>${item.message}</span>
+          <span>${escapeHtml(item.message)}</span>
           <small>${formatShortDate(item.createdDate)}</small>
         </button>
       `
@@ -175,7 +175,7 @@ function showNotificationToast(notification) {
   toast.className = "notification-toast";
   toast.innerHTML = `
     <strong>New notification</strong>
-    <p>${notification.message}</p>
+    <p>${escapeHtml(notification.message)}</p>
   `;
 
   toastContainer.appendChild(toast);
