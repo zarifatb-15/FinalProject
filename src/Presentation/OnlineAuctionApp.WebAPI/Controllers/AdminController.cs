@@ -7,7 +7,7 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
-public class AdminController : ControllerBase
+public class AdminController : BaseApiController
 {
     private readonly IAdminService _adminService;
 
@@ -20,21 +20,21 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetDashboard()
     {
         var dashboard = await _adminService.GetDashboardAsync();
-        return Ok(dashboard);
+        return ApiSuccess(dashboard);
     }
 
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
         var users = await _adminService.GetUsersAsync();
-        return Ok(users);
+        return ApiSuccess(users);
     }
 
     [HttpGet("auctions")]
     public async Task<IActionResult> GetAuctions()
     {
         var auctions = await _adminService.GetAuctionsAsync();
-        return Ok(auctions);
+        return ApiSuccess(auctions);
     }
 
     [HttpPatch("auctions/{auctionId}/cancel")]
@@ -43,11 +43,16 @@ public class AdminController : ControllerBase
         try
         {
             var auction = await _adminService.CancelAuctionAsync(auctionId);
-            return Ok(auction);
+            return ApiSuccess(auction);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            if (ex.Message == "Auction not found.")
+            {
+                return ApiNotFound(ex.Message);
+            }
+
+            return ApiConflict(ex.Message);
         }
     }
 }
