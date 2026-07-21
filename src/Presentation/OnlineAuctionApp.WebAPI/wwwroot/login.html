@@ -1,101 +1,107 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
+    <title data-i18n="login_title">Daxil Ol | BidVerse</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
   </head>
-  <body>
-    <header class="navbar">
-      <div class="nav-shell">
-        <a href="/index.html" class="brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Live bidding marketplace</small>
-          </span>
-        </a>
+  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    <div id="navbar-container"></div>
 
-        <nav class="nav-links">
-          <a href="/auctions.html">Auctions</a>
-          <a
-            href="/seller-dashboard.html"
-            id="sellerDashboardLink"
-            class="hidden"
-            >Seller Dashboard</a
-          >
-          <a href="/login.html" id="loginLink">Login</a>
-          <a
-            href="/register.html"
-            id="registerLink"
-            class="btn btn-small btn-outline"
-            >Register</a
-          >
-          <button id="logoutButton" class="btn btn-small btn-outline hidden">
-            Logout
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <main class="auth-page">
-      <section class="auth-card">
-        <span class="eyebrow">Welcome back</span>
-        <h1>Login to your account</h1>
-        <p>Use your buyer or seller account to continue.</p>
-
-        <form id="loginForm" class="form">
-          <label>
-            Username or Email
+    <main class="flex-1 flex items-center justify-center w-full px-4 py-8">
+      <div
+        class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl max-w-md w-full space-y-6 transition-colors duration-300"
+      >
+        <div class="text-center">
+          <h1 class="text-2xl font-black text-gray-900 dark:text-white" data-i18n="login_title">
+            BidVerse-ə Giriş
+          </h1>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1" data-i18n="login_subtitle">
+            Davam etmək üçün hesabınıza daxil olun
+          </p>
+        </div>
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="login_username_label"
+              >İstifadəçi adı və ya Email</label
+            >
             <input
               type="text"
               id="usernameOrEmail"
               required
-              placeholder="sara@example.com"
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-indigo-600"
             />
-          </label>
-
-          <label>
-            Password
-            <div class="password-field">
-              <input
-                type="password"
-                id="password"
-                required
-                placeholder="Password123"
-                autocomplete="current-password"
-              />
-
-              <button
-                type="button"
-                class="password-toggle"
-                data-toggle-password="password"
-                aria-label="Show password"
-              >
-                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
-                  ></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-          </label>
-
-          <button type="submit" class="btn btn-primary full-width">
-            Login
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="login_password_label"
+              >Şifrə</label
+            >
+            <input
+              type="password"
+              id="password"
+              required
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-indigo-600"
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition"
+            data-i18n="login_btn"
+          >
+            Daxil Ol
           </button>
         </form>
-
-        <p id="loginMessage" class="message"></p>
-      </section>
+        <p class="text-center text-xs text-gray-500 dark:text-gray-400">
+          <span data-i18n="login_no_account">Hesabınız yoxdur?</span>
+          <a
+            href="register.html"
+            class="text-indigo-600 font-bold hover:underline"
+            data-i18n="login_register_link"
+            >Qeydiyyatdan keçin</a
+          >
+        </p>
+      </div>
     </main>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/layout.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
-    <script src="/assets/js/notifications.js"></script>
+    <div id="footer-container"></div>
+
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            const user = await Auth.login(
+              document.getElementById("usernameOrEmail").value,
+              document.getElementById("password").value,
+            );
+            if (Auth.hasRole("Admin"))
+              window.location.href = "admin-dashboard.html";
+            else if (Auth.hasRole("Seller"))
+              window.location.href = "seller-dashboard.html";
+            else window.location.href = "auctions.html";
+          } catch (err) {
+            Common.showToast(
+              err.errors || "Giriş zamanı xəta baş verdi",
+              "error",
+            );
+          }
+        });
+    </script>
   </body>
 </html>

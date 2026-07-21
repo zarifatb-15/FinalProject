@@ -1,99 +1,78 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auctions | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
+  <title data-i18n="nav_auctions">Hərraclar | BidVerse</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
   </head>
-  <body>
-    <header class="navbar">
-      <div class="nav-shell">
-        <a href="/index.html" class="brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Live bidding marketplace</small>
-          </span>
-        </a>
+  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    <div id="navbar-container"></div>
 
-        <nav class="nav-links">
-          <a href="/auctions.html">Auctions</a>
-          <a
-            href="/seller-dashboard.html"
-            id="sellerDashboardLink"
-            class="hidden"
-            >Seller Dashboard</a
-          >
-          <a href="/login.html" id="loginLink">Login</a>
-          <a
-            href="/register.html"
-            id="registerLink"
-            class="btn btn-small btn-outline"
-            >Register</a
-          >
-          <button id="logoutButton" class="btn btn-small btn-outline hidden">
-            Logout
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <main class="page">
-      <section class="page-header">
-        <div>
-          <span class="eyebrow">Marketplace</span>
-          <h1>Active Auctions</h1>
-          <p>Search active listings by category, keyword and price range.</p>
-        </div>
-      </section>
-
-      <section class="filter-panel">
-        <form id="auctionFilterForm" class="filter-form">
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      <!-- Filter Bar -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm mb-8 transition-colors duration-300">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <input
             type="text"
-            id="searchInput"
-            placeholder="Search by title, description or category"
+            id="search-input"
+            data-i18n-placeholder="filter_search"
+            placeholder="Məhsul axtar..."
+            class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
           />
-
-          <select id="categorySelect">
-            <option value="">All categories</option>
-          </select>
-
-          <input
-            type="number"
-            id="minPriceInput"
-            min="0"
-            placeholder="Min price"
-          />
-          <input
-            type="number"
-            id="maxPriceInput"
-            min="1"
-            placeholder="Max price"
-          />
-
-          <button type="submit" class="btn btn-primary">Apply Filters</button>
-          <button
-            type="button"
-            id="clearFiltersButton"
-            class="btn btn-secondary"
+          <select
+            id="category-filter"
+            class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
           >
-            Clear
+            <option value="" data-i18n="filter_cat">Bütün Kategoriyalar</option>
+          </select>
+          <input
+            type="number"
+            id="min-price"
+            data-i18n-placeholder="filter_min"
+            placeholder="Min Qiymət"
+            class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+          />
+          <input
+            type="number"
+            id="max-price"
+            data-i18n-placeholder="filter_max"
+            placeholder="Max Qiymət"
+            class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+          />
+          <button
+            onclick="AuctionsPage.loadAuctions()"
+            class="bg-indigo-600 text-white font-medium rounded-xl py-2.5 hover:bg-indigo-700 transition"
+          >
+            <i class="fa-solid fa-filter mr-2"></i> <span data-i18n="filter_btn">Filterlə</span>
           </button>
-        </form>
-      </section>
+        </div>
+      </div>
 
-      <p id="auctionMessage" class="message"></p>
-
-      <section id="auctionGrid" class="auction-grid"></section>
+      <div
+        id="auctions-grid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+      ></div>
     </main>
-
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/layout.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
-    <script src="/assets/js/notifications.js"></script>
-    <script src="/assets/js/auctions.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/auctions.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => AuctionsPage.init());
+    </script>
   </body>
 </html>

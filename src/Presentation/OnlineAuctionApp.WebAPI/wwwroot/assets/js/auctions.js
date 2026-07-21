@@ -1,152 +1,115 @@
-const auctionGrid = document.getElementById("auctionGrid");
-const auctionMessage = document.getElementById("auctionMessage");
-const auctionFilterForm = document.getElementById("auctionFilterForm");
-const clearFiltersButton = document.getElementById("clearFiltersButton");
-const categorySelect = document.getElementById("categorySelect");
+const AuctionsPage = {
+    items: [],
 
-async function loadCategories() {
-  if (!categorySelect) {
-    return;
-  }
+    async init() {
+        await this.loadCategories();
+        await this.loadAuctions();
+        setInterval(() => this.updateTimers(), 1000);
+    },
 
-  try {
-    const categories = await apiRequest("/api/Categories");
+    async loadCategories() {
+        try {
+            const categories = await API.get('/api/Categories');
+            const select = document.getElementById('category-filter');
+            if (!select) return;
+            categories.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.name;
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    },
 
-    categories.forEach((category) => {
-      const option = document.createElement("option");
-      option.value = category.id;
-      option.textContent = category.name;
-      categorySelect.appendChild(option);
-    });
-  } catch {
-    // Category filter remains usable as "All categories".
-  }
-}
+    async loadAuctions() {
+        const search = document.getElementById('search-input')?.value || '';
+        const categoryId = document.getElementById('category-filter')?.value || '';
+        const minPrice = document.getElementById('min-price')?.value || '';
+        const maxPrice = document.getElementById('max-price')?.value || '';
 
-function buildAuctionQuery() {
-  const params = new URLSearchParams();
+        let query = [];
+        if (search) query.push(`Search=${encodeURIComponent(search)}`);
+        if (categoryId) query.push(`CategoryId=${categoryId}`);
+        if (minPrice) query.push(`MinPrice=${minPrice}`);
+        if (maxPrice) query.push(`MaxPrice=${maxPrice}`);
 
-  const search = document.getElementById("searchInput").value.trim();
-  const categoryId = document.getElementById("categorySelect").value;
-  const minPrice = document.getElementById("minPriceInput").value;
-  const maxPrice = document.getElementById("maxPriceInput").value;
+        const queryString = query.length > 0 ? '?' + query.join('&') : '';
 
-  if (search) {
-    params.append("search", search);
-  }
+        try {
+            this.items = await API.get('/api/Auctions' + queryString);
+            this.render();
+        } catch (err) {
+            Common.showToast(err.errors);
+        }
+    },
 
-  if (categoryId) {
-    params.append("categoryId", categoryId);
-  }
+    render() {
+        const grid = document.getElementById('auctions-grid');
+        if (!grid) return;
 
-  if (minPrice) {
-    params.append("minPrice", minPrice);
-  }
-
-  if (maxPrice) {
-    params.append("maxPrice", maxPrice);
-  }
-
-  const query = params.toString();
-  return query ? `/api/Auctions?${query}` : "/api/Auctions";
-}
-
-function renderAuctionCard(auction) {
-  const imageUrl = getImageUrl(auction);
-  const description =
-    auction.description.length > 100
-      ? `${auction.description.slice(0, 100)}...`
-      : auction.description;
-  const safeTitle = escapeHtml(auction.title);
-  const safeCategory = escapeHtml(auction.categoryName);
-  const safeDescription = escapeHtml(description);
-  const safeImageUrl = escapeHtml(imageUrl);
-  const safeEndTime = escapeHtml(auction.endTime);
-
-  return `
-        <a class="auction-card clickable-card" href="/auction-details.html?id=${escapeHtml(auction.id)}">
-            <div class="auction-image">
-                ${
-                  imageUrl
-                    ? `<img src="${safeImageUrl}" alt="${safeTitle}">`
-                    : `<span>No image uploaded</span>`
-                }
-            </div>
-
-            <div class="auction-body">
-                <div class="auction-meta">
-                    <span>${safeCategory}</span>
-                    <span class="countdown" data-end-time="${safeEndTime}">
-                        ${calculateCountdown(auction.endTime)}
-                    </span>
+        if (this.items.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full py-16 text-center text-gray-500">
+                    <i class="fa-solid fa-box-open text-5xl mb-4 text-gray-300"></i>
+                    <p class="text-lg font-medium">Axtarışınıza uyğun hərrac tapılmadı.</p>
                 </div>
+            `;
+            return;
+        }
 
-                <h3>${safeTitle}</h3>
-                <p>${safeDescription}</p>
+        grid.innerHTML = this.items.map(a => {
+            const img = (a.images && a.images.length > 0) 
+                ? (a.images.find(i => i.isPrimary)?.imageUrl || a.images[0].imageUrl)
+                : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600';
 
-                <div class="auction-footer">
-                    <div>
-                        <span class="muted">Current Bid</span>
-                        <div class="current-price">${formatPrice(auction.currentPrice)}</div>
+            return `
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group">
+                    <div class="relative h-48 bg-gray-100 overflow-hidden">
+                        <img src="${img}" alt="${a.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-gray-800 text-xs px-3 py-1 rounded-full font-semibold shadow-sm">
+                            ${a.categoryName || 'General'}
+                        </span>
                     </div>
-
-                    <span class="btn btn-secondary">
-                        View Details
-                    </span>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg line-clamp-1 group-hover:text-indigo-600 transition">${a.title}</h3>
+                            <p class="text-gray-500 text-sm line-clamp-2 mt-1">${a.description}</p>
+                        </div>
+                        <div class="border-t pt-4 border-gray-50 space-y-3">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="text-xs text-gray-400 font-medium block">Cari Qiymət</span>
+                                    <span class="text-xl font-black text-indigo-600">${Common.formatCurrency(a.currentPrice || a.startingPrice)}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-gray-400 font-medium block">Qalan Vaxt</span>
+                                    <span class="auction-timer text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md" data-endtime="${a.endTime}">
+                                        Hesablanır...
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="auction-details.html?id=${a.id}" class="block w-full text-center bg-gray-900 text-white font-medium py-2.5 rounded-xl hover:bg-indigo-600 transition">
+                                Detallara Bax
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </a>
-    `;
-}
+            `;
+        }).join('');
 
-async function loadAuctions() {
-  if (!auctionGrid) {
-    return;
-  }
+        this.updateTimers();
+    },
 
-  auctionMessage.textContent = "Loading auctions...";
-  auctionMessage.className = "message";
-
-  try {
-    const auctions = await apiRequest(buildAuctionQuery());
-
-    if (auctions.length === 0) {
-      auctionGrid.innerHTML = "";
-      auctionMessage.textContent = "No auctions found for your filters.";
-      auctionMessage.className = "message";
-      return;
+    updateTimers() {
+        document.querySelectorAll('.auction-timer').forEach(el => {
+            const end = el.getAttribute('data-endtime');
+            const cd = Common.formatCountdown(end);
+            el.textContent = cd.text;
+            if (cd.isEnded) {
+                el.className = 'auction-timer text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md';
+            }
+        });
     }
-
-    auctionGrid.innerHTML = auctions.map(renderAuctionCard).join("");
-    auctionMessage.textContent = "";
-  } catch (error) {
-    auctionGrid.innerHTML = "";
-    auctionMessage.textContent = error.message;
-    auctionMessage.className = "message error";
-  }
-}
-
-function refreshCountdowns() {
-  document.querySelectorAll("[data-end-time]").forEach((element) => {
-    element.textContent = calculateCountdown(element.dataset.endTime);
-  });
-}
-
-if (auctionFilterForm) {
-  auctionFilterForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    await loadAuctions();
-  });
-}
-
-if (clearFiltersButton) {
-  clearFiltersButton.addEventListener("click", async () => {
-    auctionFilterForm.reset();
-    await loadAuctions();
-  });
-}
-
-loadCategories();
-loadAuctions();
-
-setInterval(refreshCountdowns, 30000);
+};

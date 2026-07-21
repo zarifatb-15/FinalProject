@@ -1,177 +1,146 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Online Auction System</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
+    <title>BidVerse | Onlayn Hərrac Platforması</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    
+    <!-- Tailwind CDN & Dark Mode Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   </head>
-  <body>
-    <header class="navbar">
-      <div class="nav-shell">
-        <a href="/index.html" class="brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Live bidding marketplace</small>
-          </span>
-        </a>
+  
+  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    
+    <!-- Navbar Container (common.js tərəfindən avtomatik doldurulur) -->
+    <div id="navbar-container"></div>
 
-        <nav class="nav-links">
-          <a href="/auctions.html">Auctions</a>
-          <a
-            href="/seller-dashboard.html"
-            id="sellerDashboardLink"
-            class="hidden"
-            >Seller Dashboard</a
-          >
-          <a href="/login.html" id="loginLink">Login</a>
-          <a
-            href="/register.html"
-            id="registerLink"
-            class="btn btn-small btn-outline"
-            >Register</a
-          >
-          <button id="logoutButton" class="btn btn-small btn-outline hidden">
-            Logout
-          </button>
-        </nav>
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white py-20 px-4">
+      <div class="max-w-5xl mx-auto text-center space-y-6">
+        <span class="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs px-4 py-1.5 rounded-full font-semibold uppercase tracking-wider" data-i18n="hero_badge">
+          Təhlükəsiz & Canlı Hərraclar
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-tight" data-i18n="hero_title">
+          Nadir və Dəyərli Əşyaların Onlayn Hərrac Mərkəzi
+        </h1>
+        <p class="text-indigo-200 text-lg max-w-2xl mx-auto" data-i18n="hero_desc">
+          Təhlükəsiz təkliflər verin, kolleksiyanızı genişləndirin və ya öz əşyalarınızı ən yüksək qiymətə satın.
+        </p>
+        <div class="flex justify-center space-x-4 pt-4">
+          <a href="auctions.html" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-3.5 rounded-xl shadow-lg transition transform hover:-translate-y-0.5" data-i18n="hero_btn_auctions">
+            Hərraclara Bax
+          </a>
+          <a href="register.html" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 font-bold px-8 py-3.5 rounded-xl transition" data-i18n="hero_btn_start">
+            Satışa Başla
+          </a>
+        </div>
       </div>
     </header>
-    <main>
-      <section class="hero">
-        <div class="hero-content">
-          <span class="eyebrow">Live Auction Marketplace</span>
-          <h1>Discover rare deals and bid with confidence.</h1>
-          <p>
-            Browse active auctions, follow real-time price changes, and compete
-            transparently with full bid history and automatic winner detection.
-          </p>
 
-          <div class="hero-actions">
-            <a href="/auctions.html" class="btn btn-primary">Browse Auctions</a>
-            <a href="/register.html" class="btn btn-secondary">Start Selling</a>
+    <!-- Niyə BidVerse? (Platforma Üstünlükləri) -->
+    <section class="max-w-7xl mx-auto px-4 py-16">
+      <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <h2 class="text-xs uppercase font-extrabold tracking-widest text-indigo-600 dark:text-indigo-400" data-i18n="why_us_subtitle">
+          Niyə Bizi Seçməlisiniz?
+        </h2>
+        <h3 class="text-3xl font-black text-gray-900 dark:text-white" data-i18n="why_us_title">
+          Ağıllı, Sürətli və Şəffaf Hərrac Təcrübəsi
+        </h3>
+        <p class="text-gray-500 dark:text-gray-400 text-sm" data-i18n="why_us_desc">
+          BidVerse kolleksiyaçılar və satıcılar üçün ən müasir texnologiyalarla təchiz olunmuş canlı alqı-satqı platformasıdır.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm hover:shadow-md transition duration-300 flex flex-col items-start space-y-4">
+          <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center text-2xl font-bold">
+            <i class="fa-solid fa-bolt"></i>
           </div>
-
-          <div class="hero-stats" aria-label="Marketplace highlights">
-            <div>
-              <strong>24/7</strong>
-              <span>Live bidding</span>
-            </div>
-            <div>
-              <strong>Auto</strong>
-              <span>Winner detection</span>
-            </div>
-            <div>
-              <strong>Full</strong>
-              <span>Bid history</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-panel">
-          <div class="panel-header">
-            <span>Featured Auction</span>
-            <span class="status-dot">Live</span>
-          </div>
-
-          <div class="hero-card">
-            <div class="hero-card-image hero-card-photo">
-              <img
-                src="/uploads/auctions/7e688e2b-8d1f-488d-b666-992d862b63e7.webp"
-                alt="Premium laptop auction item"
-              />
-              <span>Verified Listing</span>
-            </div>
-
-            <div class="hero-card-body">
-              <h3>MacBook Pro</h3>
-              <p>High-value tech listing with real-time bid tracking.</p>
-
-              <div class="price-row">
-                <span>Current Bid</span>
-                <strong>1400 ₼</strong>
-              </div>
-
-              <div class="countdown-preview">Auto-close at deadline</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="market-section">
-        <div class="section-heading">
-          <span class="eyebrow">How it works</span>
-          <h2>A transparent auction flow from listing to final bid</h2>
-          <p>
-            Every auction keeps the deadline, current price, bidding activity
-            and final winner in one clear process.
+          <h4 class="text-xl font-bold text-gray-900 dark:text-white" data-i18n="feature1_title">Anlıq Və Canlı Təkliflər</h4>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n="feature1_desc">
+            SignalR texnologiyası sayəsində səhifəni yeniləmədən canlı hərrac təkliflərini real vaxtda izləyin və qalib gəlin.
           </p>
         </div>
 
-        <div class="workflow-grid">
-          <article class="workflow-card">
-            <span class="step-number">01</span>
-            <h3>Browse live auctions</h3>
-            <p>
-              Explore active listings by category, keyword and price range
-              before placing a bid.
-            </p>
-          </article>
-
-          <article class="workflow-card">
-            <span class="step-number">02</span>
-            <h3>Place a higher bid</h3>
-            <p>
-              Buyers compete with incrementally higher bids while the current
-              price updates.
-            </p>
-          </article>
-
-          <article class="workflow-card">
-            <span class="step-number">03</span>
-            <h3>Follow the deadline</h3>
-            <p>
-              Countdown timers create urgency while the backend automatically
-              closes expired auctions.
-            </p>
-          </article>
-
-          <article class="workflow-card">
-            <span class="step-number">04</span>
-            <h3>Win transparently</h3>
-            <p>
-              The highest bidder is selected automatically and the full bid
-              history remains visible.
-            </p>
-          </article>
+        <!-- Feature 2 -->
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm hover:shadow-md transition duration-300 flex flex-col items-start space-y-4">
+          <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center text-2xl font-bold">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h4 class="text-xl font-bold text-gray-900 dark:text-white" data-i18n="feature2_title">100% Təhlükəsiz Sistem</h4>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n="feature2_desc">
+            İstifadəçi hesabları və təkliflər tam qorunur. Hərrac bitənədək ödənişləriniz təhlükəsiz depozitdə saxlanılır.
+          </p>
         </div>
 
-        <div class="trust-strip">
-          <div>
-            <strong>Automatic closing</strong>
-            <span>Expired auctions are completed by the system.</span>
+        <!-- Feature 3 -->
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700/60 shadow-sm hover:shadow-md transition duration-300 flex flex-col items-start space-y-4">
+          <div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center text-2xl font-bold">
+            <i class="fa-solid fa-gem"></i>
           </div>
-
-          <div>
-            <strong>Outbid alerts</strong>
-            <span
-              >Users are notified when another buyer places a higher bid.</span
-            >
-          </div>
-
-          <div>
-            <strong>Auditable history</strong>
-            <span>Every auction keeps a visible record of its bids.</span>
-          </div>
+          <h4 class="text-xl font-bold text-gray-900 dark:text-white" data-i18n="feature3_title">Nadir & Orijinal Əşyalar</h4>
+          <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed" data-i18n="feature3_desc">
+            Kolleksiya saatları, retro avtomobillər, sənət əsərləri və unikal elektronika yalnız yoxlanılmış satıcılardan.
+          </p>
         </div>
-      </section>
+      </div>
+    </section>
+
+    <!-- Qeydiyyata Həvəsləndirici Banner (CTA) -->
+    <section class="max-w-7xl mx-auto px-4 mb-16 w-full">
+      <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-8 md:p-12 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="space-y-3 text-center md:text-left">
+          <h3 class="text-2xl md:text-3xl font-black" data-i18n="cta_title">Hələ də hesabınız yoxdur?</h3>
+          <p class="text-indigo-100 text-sm md:text-base max-w-xl" data-i18n="cta_desc">
+            İndi qeydiyyatdan keçin, canlı hərraclara ilk təklifinizi verin və ya öz nadir əşyalarınızı dərhal hərraca çıxarın.
+          </p>
+        </div>
+        <div class="flex-shrink-0">
+          <a href="register.html" class="bg-white text-indigo-700 hover:bg-indigo-50 font-black px-8 py-4 rounded-xl shadow-lg transition transform hover:scale-105 inline-block" data-i18n="cta_btn">
+            İndi Pulsuz Qeydiyyat Ol &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Aktiv Hərraclar Bölməsi -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white" data-i18n="active_auctions">Aktiv Hərraclar</h2>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" data-i18n="active_auctions_sub">Hazırda canlı təklif qəbul edən hərraclar</p>
+        </div>
+        <a href="auctions.html" class="text-indigo-600 dark:text-indigo-400 font-semibold text-sm hover:underline" data-i18n="view_all">
+          Hamısına bax &rarr;
+        </a>
+      </div>
+      
+      <div id="auctions-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
     </main>
-
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/layout.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
-    <script src="/assets/js/notifications.js"></script>
+    <div id="footer-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/auctions.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+          if(typeof AuctionsPage !== 'undefined' && AuctionsPage.init) {
+              AuctionsPage.init();
+          }
+      });
+    </script>
   </body>
 </html>

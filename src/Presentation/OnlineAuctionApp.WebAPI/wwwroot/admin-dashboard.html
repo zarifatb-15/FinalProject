@@ -1,180 +1,249 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
-  </head>
+<html lang="az" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title data-i18n="admin_dashboard">Admin Dashboard | BidVerse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            panelBg: '#1e1e2d',
+            mainBg: '#151521',
+            brandBlue: '#00c8ff',
+            brandPink: '#ff007b',
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-mainBg text-gray-300 font-sans antialiased flex h-screen overflow-hidden">
 
-  <body class="admin-only-page">
-    <main class="admin-shell">
-      <aside class="admin-sidebar">
-        <a href="/index.html" class="admin-brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Admin workspace</small>
-          </span>
-        </a>
+  <!-- SIDEBAR -->
+  <aside class="w-[260px] bg-panelBg border-r border-gray-800 flex flex-col hidden lg:flex">
+    <div class="h-[70px] flex items-center px-6 border-b border-gray-800">
+      <i class="fa-solid fa-layer-group text-2xl text-white mr-3"></i>
+      <span class="text-xl font-bold text-white tracking-wide">BidVerse</span>
+      <i class="fa-solid fa-arrow-left ml-auto cursor-pointer hover:text-white"></i>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      <p class="px-3 text-xs font-bold text-gray-500 uppercase mt-4 mb-2">Əsas</p>
+      
+      <a href="#" class="flex items-center px-3 py-2.5 bg-gray-800/50 rounded-lg text-white group">
+        <i class="fa-solid fa-house w-6 text-brandBlue"></i>
+        <span class="font-medium" data-i18n="admin_dashboard">Dashboard</span>
+        <i class="fa-solid fa-chevron-down ml-auto text-xs"></i>
+      </a>
+      <div class="pl-9 pr-3 py-2 space-y-2 text-sm">
+        <a href="#" class="block text-gray-400 hover:text-white transition">Default</a>
+        <a href="#" class="block text-white font-medium flex items-center"><span class="w-1.5 h-1.5 rounded-full border border-white mr-2"></span> Alternate</a>
+        <a href="#" class="block text-gray-400 hover:text-white transition">Graphical</a>
+      </div>
 
-        <nav class="admin-menu">
-          <a href="#overview" class="active">Dashboard</a>
-          <a href="#auctions">Auctions</a>
-          <a href="#users">Users</a>
-          <a href="#system">System Status</a>
-        </nav>
+      <p class="px-3 text-xs font-bold text-gray-500 uppercase mt-6 mb-2">Modullar</p>
+      <a href="auctions.html" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800/30 transition group">
+        <i class="fa-solid fa-gavel w-6 text-gray-400 group-hover:text-white"></i>
+        <span data-i18n="nav_auctions">Hərraclar</span>
+      </a>
+      <a href="index.html" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800/30 transition group">
+        <i class="fa-solid fa-house w-6 text-gray-400 group-hover:text-white"></i>
+        <span data-i18n="nav_home">Ana Səhifə</span>
+      </a>
+      <a href="categories.html" class="flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800/30 transition group">
+        <i class="fa-solid fa-list w-6 text-gray-400 group-hover:text-white"></i>
+        <span data-i18n="nav_categories">Kategoriyalar</span>
+      </a>
+    </div>
+  </aside>
 
-        <div class="admin-sidebar-note">
-          <strong>Secure access</strong>
-          <p>Only administrator accounts can manage platform activity.</p>
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- TOP HEADER -->
+    <header class="h-[70px] bg-panelBg border-b border-gray-800 flex items-center justify-between px-6">
+      <div class="flex items-center w-1/3">
+        <div class="relative w-full max-w-md hidden md:block">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+          <input type="text" placeholder="Search..." class="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-gray-500">
         </div>
-      </aside>
+      </div>
 
-      <section class="admin-main-area">
-        <header class="admin-topbar">
-          <div class="admin-search-box">
-            <span>⌕</span>
-            <input type="text" placeholder="Search dashboard..." disabled />
+      <div class="flex items-center space-x-5 text-gray-400">
+        <button onclick="Theme.toggle()" class="hover:text-white transition"><i class="fa-regular fa-sun text-lg"></i></button>
+        <a href="notifications.html" class="relative hover:text-white transition">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+        </a>
+        
+        <button onclick="Auth.logout()" class="flex items-center space-x-3 border-l border-gray-700 pl-5 hover:text-white transition">
+          <div class="w-8 h-8 rounded-full bg-brandBlue flex items-center justify-center text-white font-bold text-sm" id="adminAvatar">A</div>
+          <div class="hidden md:block text-left">
+            <p class="text-sm font-bold text-white leading-tight" id="adminName">Admin User</p>
+            <p class="text-xs text-gray-500">Administrator</p>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD CONTENT -->
+    <main class="flex-1 overflow-y-auto p-6 scroll-smooth">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1600px] mx-auto">
+        
+        <!-- Sales Overview Chart -->
+        <div class="lg:col-span-8 bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-white font-bold tracking-wide">Satış İcmalı</h3>
+          </div>
+          <div class="h-[250px] w-full">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Order Status Bar Chart -->
+        <div class="lg:col-span-4 bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-white font-bold tracking-wide">Hərrac Statusu</h3>
+          </div>
+          <div class="h-[250px] w-full">
+            <canvas id="orderChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Donut Chart -->
+        <div class="lg:col-span-4 bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50 flex flex-col justify-center items-center">
+          <div class="w-full flex justify-between items-center mb-2">
+            <h3 class="text-white font-bold tracking-wide">Aktivlik Cədvəli</h3>
+          </div>
+          <div class="h-[200px] w-full relative">
+            <canvas id="donutChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 4 Stat Cards Grid -->
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <!-- Card 1: Total Auctions -->
+          <div class="bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50 flex flex-col justify-between group">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-gray-400 text-sm" data-i18n="admin_total_auctions">Ümumi Hərraclar</p>
+                <h2 class="text-2xl font-bold text-white mt-1" id="total-auctions">0</h2>
+              </div>
+              <i class="fa-solid fa-cart-shopping text-brandBlue text-xl bg-brandBlue/10 p-2 rounded-lg"></i>
+            </div>
           </div>
 
-          <div class="admin-topbar-actions">
-            <a href="/auctions.html" class="btn btn-secondary">Marketplace</a>
-            <button type="button" class="btn btn-primary" id="refreshAdminButton">
-              Refresh
-            </button>
-            <button type="button" class="btn btn-outline" id="adminLogoutButton">
-              Logout
-            </button>
+          <!-- Card 2: Total Users -->
+          <div class="bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50 flex flex-col justify-between group">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-gray-400 text-sm" data-i18n="admin_total_users">Ümumi İstifadəçilər</p>
+                <h2 class="text-2xl font-bold text-white mt-1" id="total-users">0</h2>
+              </div>
+              <i class="fa-solid fa-users text-emerald-500 text-xl bg-emerald-500/10 p-2 rounded-lg"></i>
+            </div>
           </div>
-        </header>
 
-        <section id="adminAccessError" class="admin-access-card hidden">
-          <span class="eyebrow">Admin Access</span>
-          <h1>Admin access required</h1>
-          <p>You need to login with an administrator account to view this page.</p>
-          <a href="/login.html" class="btn btn-primary">Login as Admin</a>
-        </section>
-
-        <section id="adminDashboardContent" class="hidden">
-          <section class="admin-welcome-card" id="overview">
-            <div>
-              <span class="eyebrow">Admin Control Center</span>
-              <h1>Welcome back, <span id="adminName">Admin</span></h1>
-              <p>
-                Monitor users, auction listings, bids, winners and moderation
-                actions from one professional dashboard.
-              </p>
-            </div>
-
-            <div class="admin-profile-card">
-              <span class="admin-avatar">A</span>
+          <!-- Card 3: Total Bids -->
+          <div class="bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50 flex flex-col justify-between group">
+            <div class="flex justify-between items-start">
               <div>
-                <strong>Administrator</strong>
-                <small>Full platform access</small>
+                <p class="text-gray-400 text-sm" data-i18n="admin_total_bids">Ümumi Təkliflər</p>
+                <h2 class="text-2xl font-bold text-white mt-1" id="total-bids">0</h2>
               </div>
+              <i class="fa-solid fa-dollar-sign text-brandPink text-xl bg-brandPink/10 px-3 py-2 rounded-lg"></i>
             </div>
-          </section>
+          </div>
 
-          <section id="adminSummaryGrid" class="admin-stat-grid"></section>
-
-          <section class="admin-dashboard-grid">
-            <section class="admin-panel admin-panel-large" id="auctions">
-              <div class="admin-panel-header">
-                <div>
-                  <span class="eyebrow">Auction Management</span>
-                  <h2>All auctions</h2>
-                  <p>
-                    Review sellers, winners, bid counts, deadlines and cancel
-                    active auctions when moderation is required.
-                  </p>
-                </div>
-              </div>
-
-              <div class="table-wrap">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Auction</th>
-                      <th>Seller</th>
-                      <th>Status</th>
-                      <th>Price</th>
-                      <th>Bids</th>
-                      <th>Deadline</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="adminAuctionsTable"></tbody>
-                </table>
-              </div>
-            </section>
-
-            <aside class="admin-right-column">
-              <section class="admin-panel" id="system">
-                <span class="eyebrow">System</span>
-                <h2>Platform health</h2>
-
-                <div class="admin-health-list">
-                  <div>
-                    <span>Authentication</span>
-                    <strong>Active</strong>
-                  </div>
-                  <div>
-                    <span>Role authorization</span>
-                    <strong>Protected</strong>
-                  </div>
-                  <div>
-                    <span>Notifications</span>
-                    <strong>Enabled</strong>
-                  </div>
-                  <div>
-                    <span>Auto closing</span>
-                    <strong>Running</strong>
-                  </div>
-                </div>
-              </section>
-
-              <section class="admin-panel">
-                <span class="eyebrow">Moderation</span>
-                <h2>Admin actions</h2>
-                <p class="admin-muted">
-                  Cancelled auctions are not deleted from the database. They are
-                  hidden from public marketplace lists and remain visible for
-                  admin review.
-                </p>
-              </section>
-            </aside>
-          </section>
-
-          <section class="admin-panel" id="users">
-            <div class="admin-panel-header">
+          <!-- Card 4: Total Categories -->
+          <div class="bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50 flex flex-col justify-between group">
+            <div class="flex justify-between items-start">
               <div>
-                <span class="eyebrow">User Accounts</span>
-                <h2>Registered users</h2>
-                <p>Buyer, seller and administrator accounts in the system.</p>
+                <p class="text-gray-400 text-sm" data-i18n="admin_total_categories">Ümumi Kategoriyalar</p>
+                <h2 class="text-2xl font-bold text-white mt-1" id="total-categories">0</h2>
               </div>
+              <i class="fa-solid fa-box text-amber-500 text-xl bg-amber-500/10 p-2 rounded-lg"></i>
             </div>
+          </div>
 
-            <div class="table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody id="adminUsersTable"></tbody>
-              </table>
-            </div>
-          </section>
-        </section>
+        </div>
 
-        <p id="adminMessage" class="message"></p>
-      </section>
+        <!-- Users Table Section -->
+        <div class="lg:col-span-6 bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-white font-bold tracking-wide" data-i18n="admin_users">İstifadəçilər</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="text-gray-500 uppercase text-xs">
+                <tr>
+                  <th class="py-3 px-4" data-i18n="register_username">İstifadəçi Adı</th>
+                  <th class="py-3 px-4">Email</th>
+                  <th class="py-3 px-4" data-i18n="register_role">Rol</th>
+                </tr>
+              </thead>
+              <tbody id="users-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Auctions Table Section -->
+        <div class="lg:col-span-6 bg-panelBg rounded-xl p-5 shadow-lg border border-gray-800/50">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-white font-bold tracking-wide" data-i18n="admin_auctions">Hərraclar</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="text-gray-500 uppercase text-xs">
+                <tr>
+                  <th class="py-3 px-4" data-i18n="seller_table_product">Məhsul</th>
+                  <th class="py-3 px-4" data-i18n="seller_table_price">Cari Qiymət</th>
+                  <th class="py-3 px-4" data-i18n="seller_table_status">Status</th>
+                  <th class="py-3 px-4 text-right" data-i18n="seller_table_actions">Əməliyyatlar</th>
+                </tr>
+              </thead>
+              <tbody id="admin-auctions-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer Text -->
+      <div class="text-center text-xs text-gray-500 mt-8 mb-4">
+        &copy; 2026 BidVerse. Bütün hüquqlar qorunur.
+      </div>
     </main>
+  </div>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/admin-dashboard.js"></script>
-  </body>
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+  <script src="assets/js/notifications.js"></script>
+  <script src="assets/js/admin-dashboard.js"></script>
+  <script>
+    Chart.defaults.color = '#6b7280';
+    Chart.defaults.font.family = 'sans-serif';
+    
+    document.addEventListener("DOMContentLoaded", () => {
+      AdminDashboard.init();
+      
+      // Admin user info
+      if (Auth.currentUser) {
+        const initial = Auth.currentUser.username ? Auth.currentUser.username.charAt(0).toUpperCase() : 'A';
+        document.getElementById('adminAvatar').textContent = initial;
+        document.getElementById('adminName').textContent = Auth.currentUser.username || 'Admin';
+      }
+    });
+  </script>
+</body>
 </html>
+

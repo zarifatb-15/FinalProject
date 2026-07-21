@@ -1,156 +1,119 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
+    <title data-i18n="register_title">Qeydiyyat | BidVerse</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
   </head>
-  <body>
-    <header class="navbar">
-      <div class="nav-shell">
-        <a href="/index.html" class="brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Live bidding marketplace</small>
-          </span>
-        </a>
+  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    <div id="navbar-container"></div>
 
-        <nav class="nav-links">
-          <a href="/auctions.html">Auctions</a>
-          <a
-            href="/seller-dashboard.html"
-            id="sellerDashboardLink"
-            class="hidden"
-            >Seller Dashboard</a
-          >
-          <a href="/login.html" id="loginLink">Login</a>
-          <a
-            href="/register.html"
-            id="registerLink"
-            class="btn btn-small btn-outline"
-            >Register</a
-          >
-          <button id="logoutButton" class="btn btn-small btn-outline hidden">
-            Logout
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <main class="auth-page">
-      <section class="auth-card auth-card-wide">
-        <span class="eyebrow">Create account</span>
-        <h1>Join the auction marketplace</h1>
-        <p>Register as a buyer or seller and start using the platform.</p>
-
-        <form id="registerForm" class="form form-grid">
-          <label>
-            First Name
-            <input type="text" id="firstName" required placeholder="Sara" />
-          </label>
-
-          <label>
-            Last Name
-            <input type="text" id="lastName" required placeholder="Aliyeva" />
-          </label>
-
-          <label>
-            Username
-            <input
-              type="text"
-              id="username"
-              required
-              placeholder="saraSeller"
-            />
-          </label>
-
-          <label>
-            Email
-            <input
-              type="email"
-              id="email"
-              required
-              placeholder="sara@example.com"
-            />
-          </label>
-
-          <label>
-            Role
-            <select id="role" required>
-              <option value="Buyer">Buyer</option>
-              <option value="Seller">Seller</option>
+    <main class="flex-1 flex items-center justify-center w-full px-4 py-8">
+      <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl max-w-md w-full space-y-6 transition-colors duration-300">
+        <div class="text-center">
+          <h1 class="text-2xl font-black text-gray-900 dark:text-white" data-i18n="register_title">Hesab Yaradın</h1>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1" data-i18n="login_subtitle">Davam etmək üçün qeydiyyatdan keçin</p>
+        </div>
+        <form id="reg-form" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_firstname">Ad</label>
+              <input type="text" id="firstName" required
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_lastname">Soyad</label>
+              <input type="text" id="lastName" required
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_username">İstifadəçi Adı</label>
+            <input type="text" id="username" required
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_email">Email</label>
+            <input type="email" id="email" required
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_role">Rol Seçimi</label>
+            <select id="role"
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-indigo-600">
+              <option value="Buyer" class="dark:bg-slate-700" data-i18n="role_buyer">Alıcı (Buyer)</option>
+              <option value="Seller" class="dark:bg-slate-700" data-i18n="role_seller">Satıcı (Seller)</option>
             </select>
-          </label>
-
-          <label>
-            Password
-            <div class="password-field">
-              <input
-                type="password"
-                id="registerPassword"
-                required
-                placeholder="Password123"
-                autocomplete="new-password"
-              />
-
-              <button
-                type="button"
-                class="password-toggle"
-                data-toggle-password="registerPassword"
-                aria-label="Show password"
-              >
-                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
-                  ></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-          </label>
-
-          <label>
-            Confirm Password
-            <div class="password-field">
-              <input
-                type="password"
-                id="confirmPassword"
-                required
-                placeholder="Password123"
-                autocomplete="new-password"
-              />
-
-              <button
-                type="button"
-                class="password-toggle"
-                data-toggle-password="confirmPassword"
-                aria-label="Show password"
-              >
-                <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"
-                  ></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-          </label>
-
-          <button type="submit" class="btn btn-primary full-width form-span">
-            Create Account
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_password">Şifrə</label>
+            <input type="password" id="password" required
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_confirm">Şifrə Təkrarı</label>
+            <input type="password" id="confirmPassword" required
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+          </div>
+          <button type="submit"
+            class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition"
+            data-i18n="register_btn">
+            Qeydiyyatı Tamamla
           </button>
         </form>
-
-        <p id="registerMessage" class="message"></p>
-      </section>
+        <p class="text-center text-xs text-gray-500 dark:text-gray-400">
+          <span data-i18n="login_no_account">Artıq hesabınız var?</span>
+          <a href="login.html" class="text-indigo-600 font-bold hover:underline" data-i18n="login_register_link">Daxil Ol</a>
+        </p>
+      </div>
     </main>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/layout.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
-    <script src="/assets/js/notifications.js"></script>
+    <div id="footer-container"></div>
+
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+      document.getElementById("reg-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = {
+          firstName: document.getElementById("firstName").value,
+          lastName: document.getElementById("lastName").value,
+          username: document.getElementById("username").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+          confirmPassword: document.getElementById("confirmPassword").value,
+          role: document.getElementById("role").value,
+        };
+        try {
+          await Auth.register(data);
+          Common.showToast("Qeydiyyat uğurla tamamlandı!", "success");
+          // Backend register sets cookie automatically, so we can redirect directly
+          const user = await Auth.init();
+          if (user) {
+            if (Auth.hasRole("Admin")) window.location.href = "admin-dashboard.html";
+            else if (Auth.hasRole("Seller")) window.location.href = "seller-dashboard.html";
+            else window.location.href = "auctions.html";
+          } else {
+            setTimeout(() => (window.location.href = "login.html"), 1500);
+          }
+        } catch (err) {
+          Common.showToast(err.errors || "Qeydiyyat zamanı xəta baş verdi");
+        }
+      });
+    </script>
   </body>
 </html>
+
