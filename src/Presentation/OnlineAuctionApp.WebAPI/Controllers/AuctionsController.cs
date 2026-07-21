@@ -197,7 +197,7 @@ public class AuctionsController : BaseApiController
         return ApiSuccess(bids);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost("close-expired")]
     public async Task<IActionResult> CloseExpiredAuctions()
     {
@@ -209,7 +209,7 @@ public class AuctionsController : BaseApiController
         });
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost("{auctionId}/close")]
     public async Task<IActionResult> CloseAuction(Guid auctionId)
     {
