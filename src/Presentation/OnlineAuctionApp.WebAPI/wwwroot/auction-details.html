@@ -1,233 +1,169 @@
 <!doctype html>
-<html lang="en">
+<html lang="az">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auction Details | Online Auction</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
+  <title data-i18n="nav_auctions">Hərrac Detalı | BidVerse</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
   </head>
-  <body>
-    <header class="navbar">
-      <div class="nav-shell">
-        <a href="/index.html" class="brand">
-          <span class="brand-mark">A</span>
-          <span>
-            <strong>Online Auction</strong>
-            <small>Live bidding marketplace</small>
-          </span>
-        </a>
+  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    <div id="navbar-container"></div>
 
-        <nav class="nav-links">
-          <a href="/auctions.html">Auctions</a>
-          <a
-            href="/seller-dashboard.html"
-            id="sellerDashboardLink"
-            class="hidden"
-            >Seller Dashboard</a
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
+      <a
+        href="auctions.html"
+        class="inline-flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-6"
+      >
+        <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="back_to_auctions">Hərraclara qayıt</span>
+      </a>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: Gallery & Info -->
+        <div class="lg:col-span-2 space-y-6">
+          <div
+            class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm transition-colors duration-300"
           >
-          <a href="/login.html" id="loginLink">Login</a>
-          <a
-            href="/register.html"
-            id="registerLink"
-            class="btn btn-small btn-outline"
-            >Register</a
+            <img
+              id="main-image"
+              src=""
+              alt="Auction"
+              class="w-full h-96 object-cover rounded-xl bg-gray-100 dark:bg-slate-700"
+            />
+          </div>
+          <div
+            class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm space-y-4 transition-colors duration-300"
           >
-          <button id="logoutButton" class="btn btn-small btn-outline hidden">
-            Logout
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <main class="page" x-data="auctionDetailsPage()" x-init="init()" x-cloak>
-      <template x-if="loading">
-        <p class="message">Loading auction details...</p>
-      </template>
-
-      <template x-if="error">
-        <section class="empty-state">
-          <h1>Something went wrong</h1>
-          <p x-text="error"></p>
-          <a href="/auctions.html" class="btn btn-primary">Back to Auctions</a>
-        </section>
-      </template>
-
-      <template x-if="auction && !loading && !error">
-        <div>
-          <section class="details-header">
-            <div>
-              <a href="/auctions.html" class="back-link">← Back to auctions</a>
-              <span class="eyebrow" x-text="auction.categoryName"></span>
-              <h1 x-text="auction.title"></h1>
-              <p x-text="auction.description"></p>
-            </div>
-
-            <div class="status-card">
-              <span>Status</span>
-              <strong x-text="auction.status"></strong>
-            </div>
-          </section>
-
-          <section class="details-layout">
-            <div class="details-main-card">
-              <div class="details-image">
-                <template x-if="mainImageUrl">
-                  <img :src="mainImageUrl" :alt="auction.title" />
-                </template>
-
-                <template x-if="!mainImageUrl">
-                  <span>No image uploaded</span>
-                </template>
-              </div>
-
-              <div class="details-info-grid">
-                <div>
-                  <span class="muted">Starting Price</span>
-                  <strong
-                    x-text="formatPriceValue(auction.startingPrice)"
-                  ></strong>
-                </div>
-
-                <div>
-                  <span class="muted">Current Bid</span>
-                  <strong
-                    class="highlight-price"
-                    x-text="formatPriceValue(auction.currentPrice)"
-                  ></strong>
-                </div>
-
-                <div>
-                  <span class="muted">Deadline</span>
-                  <strong x-text="formatDateValue(auction.endTime)"></strong>
-                </div>
-
-                <div>
-                  <span class="muted">Time Left</span>
-                  <strong
-                    class="countdown-large"
-                    x-text="countdownText"
-                  ></strong>
-                </div>
-              </div>
-            </div>
-
-            <aside class="bid-panel">
-              <h2>Place a bid</h2>
-
-              <template x-if="!user">
-                <div class="notice-box">
-                  <p>You need to login as a buyer to place a bid.</p>
-                  <a href="/login.html" class="btn btn-primary full-width"
-                    >Login to Bid</a
-                  >
-                </div>
-              </template>
-
-              <template x-if="user && !isBuyer">
-                <div class="notice-box">
-                  <p>Only buyer accounts can place bids.</p>
-                </div>
-              </template>
-
-              <template x-if="user && isBuyer && auction.status !== 'Active'">
-                <div class="notice-box">
-                  <p>This auction is already closed.</p>
-                </div>
-              </template>
-
-              <template x-if="user && isBuyer && auction.status === 'Active'">
-                <form class="form" @submit.prevent="placeBid">
-                  <label>
-                    Your Bid Amount
-                    <input
-                      type="number"
-                      min="1"
-                      step="0.01"
-                      x-model="bidAmount"
-                      :placeholder="minimumBidPlaceholder"
-                      required
-                    />
-                  </label>
-
-                  <button
-                    type="submit"
-                    class="btn btn-primary full-width"
-                    :disabled="bidSubmitting"
-                  >
-                    <span
-                      x-text="bidSubmitting ? 'Placing bid...' : 'Place Bid'"
-                    ></span>
-                  </button>
-                </form>
-              </template>
-
-              <p
-                class="message success"
-                x-show="successMessage"
-                x-text="successMessage"
-              ></p>
-              <p class="message error" x-show="bidError" x-text="bidError"></p>
-            </aside>
-          </section>
-
-          <section class="history-section">
-            <div class="section-heading">
-              <span class="eyebrow">Bid History</span>
-              <h2>Transparent bidding activity</h2>
-              <p>
-                All bids for this auction are visible for a clear and auditable
-                process.
-              </p>
-            </div>
-
-            <div class="history-card">
-              <template x-if="bids.length === 0">
-                <div class="empty-bid-history">
-                  <div class="empty-bid-icon">⌛</div>
-                  <h3>No bids yet</h3>
-                  <p>
-                    No bids have been placed yet. The first valid bid will
-                    appear here.
-                  </p>
-                </div>
-              </template>
-
-              <template x-if="bids.length > 0">
-                <table class="history-table">
-                  <thead>
-                    <tr>
-                      <th>Buyer</th>
-                      <th>Amount</th>
-                      <th>Bid Time</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <template x-for="bid in bids" :key="bid.id">
-                      <tr>
-                        <td x-text="bid.buyerUsername"></td>
-                        <td x-text="formatPriceValue(bid.amount)"></td>
-                        <td x-text="formatDateValue(bid.bidTime)"></td>
-                      </tr>
-                    </template>
-                  </tbody>
-                </table>
-              </template>
-            </div>
-          </section>
+            <span
+              id="auction-category"
+              class="bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs px-3 py-1 rounded-full font-bold"
+            ></span>
+            <h1
+              id="auction-title"
+              class="text-3xl font-black text-gray-900 dark:text-white"
+            ></h1>
+            <p
+              id="auction-description"
+              class="text-gray-600 dark:text-gray-400 leading-relaxed"
+            ></p>
+          </div>
         </div>
-      </template>
-    </main>
 
-    <script src="/assets/js/api.js"></script>
-    <script src="/assets/js/layout.js"></script>
-    <script src="/assets/js/auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
-    <script src="/assets/js/notifications.js"></script>
-    <script src="/assets/js/auction-details.js"></script>
+        <!-- Right: Bid Box & History -->
+        <div class="space-y-6">
+          <div
+            class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm space-y-6 transition-colors duration-300"
+          >
+            <div class="flex justify-between items-center border-b dark:border-slate-700 pb-4">
+              <div>
+                <span class="text-xs text-gray-400 dark:text-gray-500 font-medium block" data-i18n="current_price"
+                  >Cari Qiymət</span
+                >
+                <span
+                  id="auction-current-price"
+                  class="text-3xl font-black text-indigo-600"
+                ></span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-gray-400 dark:text-gray-500 font-medium block" data-i18n="starting_price"
+                  >Başlanğıc</span
+                >
+                <span
+                  id="auction-start-price"
+                  class="text-sm font-semibold text-gray-600 dark:text-gray-400"
+                ></span>
+              </div>
+            </div>
+
+            <div>
+              <span class="text-xs text-gray-400 dark:text-gray-500 font-medium block" data-i18n="time_left"
+                >Qalan Vaxt</span
+              >
+              <div
+                id="detail-timer"
+                class="text-lg font-bold text-amber-600 mt-1"
+              ></div>
+            </div>
+
+            <!-- Winner Box -->
+            <div
+              id="winner-info"
+              class="hidden bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 p-4 rounded-xl text-center"
+            >
+              <i class="fa-solid fa-trophy text-emerald-600 dark:text-emerald-400 text-2xl mb-1"></i>
+              <p class="text-xs text-emerald-800 dark:text-emerald-300 font-medium" data-i18n="winner">
+                Qazanmış İstifadəçi:
+              </p>
+              <p
+                id="winner-name"
+                class="font-bold text-emerald-900 dark:text-emerald-200 text-lg"
+              ></p>
+            </div>
+
+            <!-- Bid Form -->
+            <div id="bid-section" class="space-y-3 pt-2">
+              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase"
+                ><span data-i18n="new_bid">Yeni Təklif Verin (Min:</span>
+                <span id="min-bid-amount"></span>)</label
+              >
+              <input
+                type="number"
+                id="bid-amount"
+                step="1"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 font-bold text-lg focus:outline-indigo-600"
+              />
+              <button
+                onclick="AuctionDetailsPage.placeBid()"
+                class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-700 transition shadow-lg"
+                data-i18n="place_bid"
+              >
+                Təklifi Göndər
+              </button>
+            </div>
+          </div>
+
+          <!-- Bid History Table -->
+          <div
+            class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm transition-colors duration-300"
+          >
+            <h3
+              class="font-bold text-gray-900 dark:text-white mb-4 flex justify-between items-center"
+            >
+              <span data-i18n="bid_history">Təklif Tarixçəsi</span>
+              <span
+                id="bids-count"
+                class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full font-semibold"
+                >0</span
+              >
+            </h3>
+            <div
+              id="bids-history"
+              class="space-y-2 max-h-60 overflow-y-auto"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/auction-details.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () =>
+        AuctionDetailsPage.init(),
+      );
+    </script>
   </body>
 </html>
