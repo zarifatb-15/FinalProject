@@ -1,6 +1,6 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.WebAPI.Helpers;
-using FluentValidation;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
 
@@ -23,13 +23,21 @@ public abstract class BaseApiController : ControllerBase
         return CreatedAtAction(
             actionName,
             routeValues,
-            ResponseModelHelper.CreateSuccessResponse(data, StatusCodes.Status201Created));
+            ResponseModelHelper.CreateSuccessResponse(
+                data,
+                StatusCodes.Status201Created));
     }
 
     protected IActionResult ApiBadRequest(string error)
     {
         return BadRequest(
             ResponseModelHelper.CreateBadRequestResponse<string>(error));
+    }
+
+    protected IActionResult ApiBadRequest(List<string> errors)
+    {
+        return BadRequest(
+            ResponseModelHelper.CreateBadRequestResponse<string>(errors));
     }
 
     protected IActionResult ApiUnauthorized(string error)
@@ -62,9 +70,10 @@ public abstract class BaseApiController : ControllerBase
         return Ok(
             ResponseModelHelper.CreateSuccessResponse(message));
     }
+
     protected async Task<IActionResult?> ValidateRequestAsync<T>(
-    T request,
-    IValidator<T> validator)
+        T request,
+        IValidator<T> validator)
     {
         var validationResult = await validator.ValidateAsync(request);
 
@@ -77,7 +86,6 @@ public abstract class BaseApiController : ControllerBase
             .Select(error => error.ErrorMessage)
             .ToList();
 
-        return BadRequest(
-            ResponseModelHelper.CreateBadRequestResponse<string>(errors));
+        return ApiBadRequest(errors);
     }
 }

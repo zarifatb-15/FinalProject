@@ -40,19 +40,7 @@ public class AdminController : BaseApiController
     [HttpPatch("auctions/{auctionId}/cancel")]
     public async Task<IActionResult> CancelAuction(Guid auctionId)
     {
-        try
-        {
-            var auction = await _adminService.CancelAuctionAsync(auctionId);
-            return ApiSuccess(auction);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Auction not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
-
-            return ApiConflict(ex.Message);
-        }
+        var auction = await _adminService.CancelAuctionAsync(auctionId);
+        return ApiSuccess(auction);
     }
 }
