@@ -37,17 +37,10 @@ public class NotificationsController : BaseApiController
             return ApiUnauthorized("User is not authenticated.");
         }
 
-        try
-        {
-            var notification = await _notificationService.MarkAsReadAsync(
-                notificationId,
-                userId);
+        var notification = await _notificationService.MarkAsReadAsync(
+            notificationId,
+            userId);
 
-            return ApiSuccess(notification);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiNotFound(ex.Message);
-        }
+        return ApiSuccess(notification);
     }
 }
