@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineAuctionApp.WebAPI.Helpers;
+using OnlineAuctionApp.Application.Common.Exceptions;
 
 namespace OnlineAuctionApp.WebAPI.Middlewares;
 
@@ -38,11 +39,17 @@ public class GlobalExceptionMiddleware
     {
         var statusCode = exception switch
         {
+            BadRequestException => StatusCodes.Status400BadRequest,
+            NotFoundException => StatusCodes.Status404NotFound,
+            ForbiddenException => StatusCodes.Status403Forbidden,
+            ConflictException => StatusCodes.Status409Conflict,
+
             KeyNotFoundException => StatusCodes.Status404NotFound,
             UnauthorizedAccessException => StatusCodes.Status403Forbidden,
             DbUpdateConcurrencyException => StatusCodes.Status409Conflict,
             DbUpdateException => StatusCodes.Status409Conflict,
             InvalidOperationException => StatusCodes.Status400BadRequest,
+
             _ => StatusCodes.Status500InternalServerError
         };
 
