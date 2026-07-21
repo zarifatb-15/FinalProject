@@ -18,6 +18,7 @@ public class AuctionsController : BaseApiController
     private readonly IBidService _bidService;
     private readonly IAuctionClosingService _auctionClosingService;
     private readonly IValidator<AuctionCreateDto> _auctionCreateValidator;
+    private readonly IValidator<AuctionUpdateDto> _auctionUpdateValidator;
     private readonly IValidator<BidCreateDto> _bidCreateValidator;
 
     public AuctionsController(
@@ -26,6 +27,7 @@ public class AuctionsController : BaseApiController
         IBidService bidService,
         IAuctionClosingService auctionClosingService,
         IValidator<AuctionCreateDto> auctionCreateValidator,
+        IValidator<AuctionUpdateDto> auctionUpdateValidator,
         IValidator<BidCreateDto> bidCreateValidator)
     {
         _auctionService = auctionService;
@@ -33,6 +35,7 @@ public class AuctionsController : BaseApiController
         _bidService = bidService;
         _auctionClosingService = auctionClosingService;
         _auctionCreateValidator = auctionCreateValidator;
+        _auctionUpdateValidator = auctionUpdateValidator;
         _bidCreateValidator = bidCreateValidator;
     }
 
@@ -72,6 +75,53 @@ public class AuctionsController : BaseApiController
 
         var auction = await _auctionService.CreateAsync(dto, sellerId);
         return ApiCreated(nameof(GetById), new { id = auction.Id }, auction);
+    }
+    [Authorize(Roles = "Seller")]
+    [HttpPut("{auctionId}")]
+    public async Task<IActionResult> Update(
+    Guid auctionId,
+    [FromBody] AuctionUpdateDto dto)
+    {
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
+        {
+            return authError;
+        }
+
+        var validationError = await ValidateRequestAsync(
+            dto,
+            _auctionUpdateValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
+
+        var auction = await _auctionService.UpdateAsync(
+            auctionId,
+            dto,
+            sellerId);
+
+        return ApiSuccess(auction);
+    }
+
+    [Authorize(Roles = "Seller")]
+    [HttpPatch("{auctionId}/cancel")]
+    public async Task<IActionResult> CancelBySeller(Guid auctionId)
+    {
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
+        {
+            return authError;
+        }
+
+        var auction = await _auctionService.CancelBySellerAsync(
+            auctionId,
+            sellerId);
+
+        return ApiSuccess(auction);
     }
 
     [Authorize(Roles = "Seller")]

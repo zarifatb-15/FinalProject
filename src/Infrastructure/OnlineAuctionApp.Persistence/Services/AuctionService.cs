@@ -192,6 +192,116 @@ public class AuctionService : IAuctionService
         };
     }
 
+    public async Task<AuctionReturnDto> UpdateAsync(
+        Guid auctionId,
+        AuctionUpdateDto dto,
+        Guid sellerId)
+    {
+        var auction = await _context.Auctions
+            .Include(auction => auction.Bids)
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
+            .FirstOrDefaultAsync(auction => auction.Id == auctionId);
+
+        if (auction is null)
+        {
+            throw new NotFoundException("Auction not found.");
+        }
+
+        if (auction.SellerId != sellerId)
+        {
+            throw new ForbiddenException("You can only update your own auctions.");
+        }
+
+        if (auction.Status != AuctionStatus.Active)
+        {
+            throw new ConflictException("Only active auctions can be updated.");
+        }
+
+        if (auction.Bids.Any())
+        {
+            throw new ConflictException(
+                "Auction cannot be updated because it already has bids.");
+        }
+
+        if (dto.StartingPrice <= 0)
+        {
+            throw new BadRequestException("Starting price must be greater than zero.");
+        }
+
+        if (dto.EndTime <= DateTime.UtcNow)
+        {
+            throw new BadRequestException("End time must be in the future.");
+        }
+
+        var categoryExists = await _context.Categories
+            .AnyAsync(category => category.Id == dto.CategoryId);
+
+        if (!categoryExists)
+        {
+            throw new NotFoundException("Category not found.");
+        }
+
+        auction.Title = dto.Title.Trim();
+        auction.Description = dto.Description.Trim();
+        auction.StartingPrice = dto.StartingPrice;
+        auction.CurrentPrice = dto.StartingPrice;
+        auction.EndTime = dto.EndTime;
+        auction.CategoryId = dto.CategoryId;
+        auction.UpdatedDate = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        var updatedAuction = await _context.Auctions
+            .AsNoTracking()
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
+            .FirstAsync(updatedAuction => updatedAuction.Id == auction.Id);
+
+        return _mapper.Map<AuctionReturnDto>(updatedAuction);
+    }
+
+    public async Task<AuctionReturnDto> CancelBySellerAsync(
+        Guid auctionId,
+        Guid sellerId)
+    {
+        var auction = await _context.Auctions
+            .Include(auction => auction.Bids)
+            .Include(auction => auction.Category)
+            .Include(auction => auction.Images)
+            .Include(auction => auction.Winner)
+            .FirstOrDefaultAsync(auction => auction.Id == auctionId);
+
+        if (auction is null)
+        {
+            throw new NotFoundException("Auction not found.");
+        }
+
+        if (auction.SellerId != sellerId)
+        {
+            throw new ForbiddenException("You can only cancel your own auctions.");
+        }
+
+        if (auction.Status != AuctionStatus.Active)
+        {
+            throw new ConflictException("Only active auctions can be cancelled.");
+        }
+
+        if (auction.Bids.Any())
+        {
+            throw new ConflictException(
+                "Auction cannot be cancelled because it already has bids.");
+        }
+
+        auction.Status = AuctionStatus.Cancelled;
+        auction.UpdatedDate = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<AuctionReturnDto>(auction);
+    }
     private static void ValidateFilter(AuctionFilterDto filter)
     {
         if (filter.MinPrice.HasValue && filter.MinPrice.Value < 0)
