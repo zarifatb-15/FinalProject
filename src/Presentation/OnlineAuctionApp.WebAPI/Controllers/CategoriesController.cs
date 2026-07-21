@@ -40,7 +40,7 @@ public class CategoriesController : BaseApiController
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpPost]
-    public async Task<IActionResult> Create(CategoryCreateDto dto)
+    public async Task<IActionResult> Create([FromBody] CategoryCreateDto dto)
     {
         var validationError = await ValidateRequestAsync(dto, _categoryCreateValidator);
 
@@ -55,7 +55,7 @@ public class CategoriesController : BaseApiController
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] CategoryUpdateDto dto)
     {
         var validationError = await ValidateRequestAsync(dto, _categoryUpdateValidator);
 
