@@ -4,6 +4,7 @@ using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.DTOs.Bids;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.WebAPI.Extensions;
+using FluentValidation;
 using OnlineAuctionApp.WebAPI.Requests;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
@@ -16,17 +17,23 @@ public class AuctionsController : BaseApiController
     private readonly IAuctionImageService _auctionImageService;
     private readonly IBidService _bidService;
     private readonly IAuctionClosingService _auctionClosingService;
+    private readonly IValidator<AuctionCreateDto> _auctionCreateValidator;
+    private readonly IValidator<BidCreateDto> _bidCreateValidator;
 
     public AuctionsController(
         IAuctionService auctionService,
         IAuctionImageService auctionImageService,
         IBidService bidService,
-        IAuctionClosingService auctionClosingService)
+        IAuctionClosingService auctionClosingService,
+        IValidator<AuctionCreateDto> auctionCreateValidator,
+        IValidator<BidCreateDto> bidCreateValidator)
     {
         _auctionService = auctionService;
         _auctionImageService = auctionImageService;
         _bidService = bidService;
         _auctionClosingService = auctionClosingService;
+        _auctionCreateValidator = auctionCreateValidator;
+        _bidCreateValidator = bidCreateValidator;
     }
 
     [HttpGet]
@@ -65,7 +72,12 @@ public class AuctionsController : BaseApiController
         {
             return ApiUnauthorized("Invalid user token.");
         }
+        var validationError = await ValidateRequestAsync(dto, _auctionCreateValidator);
 
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var auction = await _auctionService.CreateAsync(dto, sellerId);
@@ -180,6 +192,12 @@ public class AuctionsController : BaseApiController
         if (!User.TryGetUserId(out var buyerId))
         {
             return ApiUnauthorized("Invalid user token.");
+        }
+        var validationError = await ValidateRequestAsync(dto, _bidCreateValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
         }
 
         try

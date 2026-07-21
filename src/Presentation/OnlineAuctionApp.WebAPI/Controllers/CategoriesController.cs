@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 using OnlineAuctionApp.Application.DTOs.Categories;
 using OnlineAuctionApp.Application.Interfaces.Services;
 
@@ -10,10 +11,16 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 public class CategoriesController : BaseApiController
 {
     private readonly ICategoryService _categoryService;
+    private readonly IValidator<CategoryCreateDto> _categoryCreateValidator;
+    private readonly IValidator<CategoryUpdateDto> _categoryUpdateValidator;
 
-    public CategoriesController(ICategoryService categoryService)
+    public CategoriesController(ICategoryService categoryService,
+        IValidator<CategoryCreateDto> categoryCreateValidator,
+        IValidator<CategoryUpdateDto> categoryUpdateValidator)
     {
         _categoryService = categoryService;
+        _categoryCreateValidator = categoryCreateValidator;
+        _categoryUpdateValidator = categoryUpdateValidator;
     }
 
     [HttpGet]
@@ -41,6 +48,12 @@ public class CategoriesController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> Create(CategoryCreateDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _categoryCreateValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var category = await _categoryService.CreateAsync(dto);
@@ -56,6 +69,12 @@ public class CategoriesController : BaseApiController
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _categoryUpdateValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var category = await _categoryService.UpdateAsync(id, dto);

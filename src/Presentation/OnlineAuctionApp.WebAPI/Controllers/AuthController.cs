@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.WebAPI.Constants;
 using OnlineAuctionApp.Application.DTOs.Auth;
+using FluentValidation;
 using OnlineAuctionApp.Application.Interfaces.Services;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
@@ -12,15 +13,27 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
+    private readonly IValidator<RegisterDto> _registerValidator;
+    private readonly IValidator<LoginDto> _loginValidator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService,
+        IValidator<RegisterDto> registerValidator,
+        IValidator<LoginDto> loginValidator)
     {
         _authService = authService;
+        _registerValidator = registerValidator;
+        _loginValidator = loginValidator;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _registerValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var token = await _authService.RegisterAsync(dto);
@@ -41,6 +54,12 @@ public class AuthController : BaseApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _loginValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var token = await _authService.LoginAsync(dto);

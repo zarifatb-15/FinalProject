@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.WebAPI.Helpers;
+using FluentValidation;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
 
@@ -60,5 +61,23 @@ public abstract class BaseApiController : ControllerBase
     {
         return Ok(
             ResponseModelHelper.CreateSuccessResponse(message));
+    }
+    protected async Task<IActionResult?> ValidateRequestAsync<T>(
+    T request,
+    IValidator<T> validator)
+    {
+        var validationResult = await validator.ValidateAsync(request);
+
+        if (validationResult.IsValid)
+        {
+            return null;
+        }
+
+        var errors = validationResult.Errors
+            .Select(error => error.ErrorMessage)
+            .ToList();
+
+        return BadRequest(
+            ResponseModelHelper.CreateBadRequestResponse<string>(errors));
     }
 }

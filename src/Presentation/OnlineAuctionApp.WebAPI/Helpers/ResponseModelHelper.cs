@@ -28,6 +28,17 @@ public static class ResponseModelHelper
         };
     }
 
+    public static ResponseModel<T> CreateBadRequestResponse<T>(List<string> errors)
+    {
+        return new ResponseModel<T>
+        {
+            IsSuccess = false,
+            StatusCode = StatusCodes.Status400BadRequest,
+            Errors = errors,
+            Data = default
+        };
+    }
+
     public static ResponseModel<T> CreateUnauthorizedResponse<T>(string error)
     {
         return new ResponseModel<T>
