@@ -12,4 +12,6 @@ public interface IAuctionService
     Task<List<AuctionReturnDto>> GetActiveBySellerIdAsync(Guid sellerId);
     Task<List<AuctionReturnDto>> GetCompletedBySellerIdAsync(Guid sellerId);
     Task<SellerDashboardSummaryDto> GetSellerDashboardSummaryAsync(Guid sellerId);
+    Task<AuctionReturnDto> UpdateAsync(Guid auctionId, AuctionUpdateDto dto, Guid sellerId);
+    Task<AuctionReturnDto> CancelBySellerAsync(Guid auctionId, Guid sellerId);
 }
