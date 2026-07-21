@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OnlineAuctionApp.Application.Common.Exceptions;
 using OnlineAuctionApp.Application.DTOs.Categories;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Domain.Entities;
@@ -34,7 +35,9 @@ public class CategoryService : ICategoryService
             .FirstOrDefaultAsync(category => category.Id == id);
 
         if (category is null)
-            throw new InvalidOperationException("Category not found.");
+        {
+            throw new NotFoundException("Category not found.");
+        }
 
         return _mapper.Map<CategoryReturnDto>(category);
     }
@@ -45,16 +48,22 @@ public class CategoryService : ICategoryService
         var description = dto.Description.Trim();
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidOperationException("Category name is required.");
+        {
+            throw new BadRequestException("Category name is required.");
+        }
 
         if (string.IsNullOrWhiteSpace(description))
-            throw new InvalidOperationException("Category description is required.");
+        {
+            throw new BadRequestException("Category description is required.");
+        }
 
         var exists = await _context.Categories
             .AnyAsync(category => category.Name.ToLower() == name.ToLower());
 
         if (exists)
-            throw new InvalidOperationException("Category already exists.");
+        {
+            throw new ConflictException("Category already exists.");
+        }
 
         var category = new Category
         {
@@ -73,16 +82,22 @@ public class CategoryService : ICategoryService
         var category = await _context.Categories.FindAsync(id);
 
         if (category is null)
-            throw new InvalidOperationException("Category not found.");
+        {
+            throw new NotFoundException("Category not found.");
+        }
 
         var name = dto.Name.Trim();
         var description = dto.Description.Trim();
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidOperationException("Category name is required.");
+        {
+            throw new BadRequestException("Category name is required.");
+        }
 
         if (string.IsNullOrWhiteSpace(description))
-            throw new InvalidOperationException("Category description is required.");
+        {
+            throw new BadRequestException("Category description is required.");
+        }
 
         var nameExists = await _context.Categories
             .AnyAsync(existingCategory =>
@@ -90,7 +105,9 @@ public class CategoryService : ICategoryService
                 existingCategory.Name.ToLower() == name.ToLower());
 
         if (nameExists)
-            throw new InvalidOperationException("Category already exists.");
+        {
+            throw new ConflictException("Category already exists.");
+        }
 
         category.Name = name;
         category.Description = description;
@@ -109,12 +126,12 @@ public class CategoryService : ICategoryService
 
         if (category is null)
         {
-            throw new InvalidOperationException("Category not found.");
+            throw new NotFoundException("Category not found.");
         }
 
         if (category.Auctions.Any())
         {
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 "This category cannot be deleted because it has auction listings.");
         }
 

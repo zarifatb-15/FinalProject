@@ -1,6 +1,6 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using FluentValidation;
 using OnlineAuctionApp.Application.DTOs.Categories;
 using OnlineAuctionApp.Application.Interfaces.Services;
 
@@ -14,7 +14,8 @@ public class CategoriesController : BaseApiController
     private readonly IValidator<CategoryCreateDto> _categoryCreateValidator;
     private readonly IValidator<CategoryUpdateDto> _categoryUpdateValidator;
 
-    public CategoriesController(ICategoryService categoryService,
+    public CategoriesController(
+        ICategoryService categoryService,
         IValidator<CategoryCreateDto> categoryCreateValidator,
         IValidator<CategoryUpdateDto> categoryUpdateValidator)
     {
@@ -33,15 +34,8 @@ public class CategoriesController : BaseApiController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        try
-        {
-            var category = await _categoryService.GetByIdAsync(id);
-            return ApiSuccess(category);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiNotFound(ex.Message);
-        }
+        var category = await _categoryService.GetByIdAsync(id);
+        return ApiSuccess(category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
@@ -54,15 +48,9 @@ public class CategoriesController : BaseApiController
         {
             return validationError;
         }
-        try
-        {
-            var category = await _categoryService.CreateAsync(dto);
-            return ApiCreated(nameof(GetById), new { id = category.Id }, category);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiBadRequest(ex.Message);
-        }
+
+        var category = await _categoryService.CreateAsync(dto);
+        return ApiCreated(nameof(GetById), new { id = category.Id }, category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
@@ -75,39 +63,16 @@ public class CategoriesController : BaseApiController
         {
             return validationError;
         }
-        try
-        {
-            var category = await _categoryService.UpdateAsync(id, dto);
-            return ApiSuccess(category);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Category not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
 
-            return ApiBadRequest(ex.Message);
-        }
+        var category = await _categoryService.UpdateAsync(id, dto);
+        return ApiSuccess(category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await _categoryService.DeleteAsync(id);
-            return ApiDeleted("Category deleted successfully.");
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Category not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
-
-            return ApiConflict(ex.Message);
-        }
+        await _categoryService.DeleteAsync(id);
+        return ApiDeleted("Category deleted successfully.");
     }
 }
