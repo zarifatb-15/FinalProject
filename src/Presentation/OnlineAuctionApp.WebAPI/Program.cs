@@ -11,6 +11,7 @@ using OnlineAuctionApp.Persistence.Seeders;
 using Scalar.AspNetCore;
 using OnlineAuctionApp.WebAPI.Middlewares;
 using OnlineAuctionApp.WebAPI.Constants;
+using OnlineAuctionApp.WebAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,35 @@ builder.Services.AddAuthentication(options =>
             }
 
             return Task.CompletedTask;
+        },
+
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+
+            var message = string.IsNullOrWhiteSpace(context.Error)
+                ? "Authentication is required."
+                : "Invalid or expired authentication token.";
+
+            var response = ResponseModelHelper
+                .CreateUnauthorizedResponse<string>(message);
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsJsonAsync(response);
+        },
+
+        OnForbidden = async context =>
+        {
+            var response = ResponseModelHelper
+                .CreateForbiddenResponse<string>(
+                    "You are not allowed to access this resource.");
+
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            await context.Response.WriteAsJsonAsync(response);
         }
     };
 });
