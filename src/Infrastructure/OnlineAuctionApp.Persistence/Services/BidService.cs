@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OnlineAuctionApp.Application.Common.Exceptions;
 using OnlineAuctionApp.Application.DTOs.Bids;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Domain.Entities;
@@ -27,32 +28,50 @@ public class BidService : IBidService
         _realtimeNotificationService = realtimeNotificationService;
     }
 
-    public async Task<BidReturnDto> PlaceBidAsync(Guid auctionId, Guid buyerId, BidCreateDto dto)
+    public async Task<BidReturnDto> PlaceBidAsync(
+        Guid auctionId,
+        Guid buyerId,
+        BidCreateDto dto)
     {
         var auction = await _context.Auctions
             .FirstOrDefaultAsync(auction => auction.Id == auctionId);
 
         if (auction is null)
-            throw new InvalidOperationException("Auction not found.");
+        {
+            throw new NotFoundException("Auction not found.");
+        }
 
         if (auction.Status != AuctionStatus.Active)
-            throw new InvalidOperationException("Auction is not active.");
+        {
+            throw new ConflictException("Auction is not active.");
+        }
 
         if (auction.EndTime <= DateTime.UtcNow)
-            throw new InvalidOperationException("Auction has already ended.");
+        {
+            throw new ConflictException("Auction has already ended.");
+        }
 
         if (auction.SellerId == buyerId)
-            throw new InvalidOperationException("Seller cannot bid on their own auction.");
+        {
+            throw new ConflictException("Seller cannot bid on their own auction.");
+        }
+
+        if (dto.Amount <= 0)
+        {
+            throw new BadRequestException("Bid amount must be greater than zero.");
+        }
 
         if (dto.Amount <= auction.CurrentPrice)
-            throw new InvalidOperationException("Bid amount must be greater than current price.");
+        {
+            throw new ConflictException("Bid amount must be greater than current price.");
+        }
 
         var previousHighestBid = await _context.Bids
             .AsNoTracking()
             .Where(bid => bid.AuctionId == auction.Id)
             .OrderByDescending(bid => bid.Amount)
+            .ThenByDescending(bid => bid.BidTime)
             .FirstOrDefaultAsync();
-
 
         var bid = new Bid
         {
@@ -68,11 +87,14 @@ public class BidService : IBidService
         await _context.Bids.AddAsync(bid);
         await _context.SaveChangesAsync();
 
-
-        if (previousHighestBid is not null && previousHighestBid.BuyerId != buyerId)
+        if (previousHighestBid is not null &&
+            previousHighestBid.BuyerId != buyerId)
         {
             var message = $"You have been outbid on auction '{auction.Title}'.";
-            var notification = await _notificationService.CreateAsync(previousHighestBid.BuyerId, message);
+
+            var notification = await _notificationService.CreateAsync(
+                previousHighestBid.BuyerId,
+                message);
 
             await _realtimeNotificationService.SendNotificationAsync(
                 previousHighestBid.BuyerId,
@@ -82,7 +104,7 @@ public class BidService : IBidService
         var createdBid = await _context.Bids
             .AsNoTracking()
             .Include(bid => bid.Buyer)
-            .FirstAsync(b => b.Id == bid.Id);
+            .FirstAsync(createdBid => createdBid.Id == bid.Id);
 
         return _mapper.Map<BidReturnDto>(createdBid);
     }
@@ -93,7 +115,9 @@ public class BidService : IBidService
             .AnyAsync(auction => auction.Id == auctionId);
 
         if (!auctionExists)
-            throw new InvalidOperationException("Auction not found.");
+        {
+            throw new NotFoundException("Auction not found.");
+        }
 
         var bids = await _context.Bids
             .AsNoTracking()

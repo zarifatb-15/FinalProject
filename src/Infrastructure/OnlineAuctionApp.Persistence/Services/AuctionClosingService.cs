@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OnlineAuctionApp.Application.Common.Exceptions;
 using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Domain.Enums;
@@ -36,12 +37,15 @@ public class AuctionClosingService : IAuctionClosingService
             .Select(auction => auction.Id)
             .ToListAsync();
 
+        var closedCount = 0;
+
         foreach (var auctionId in expiredAuctionIds)
         {
             await CloseAuctionAsync(auctionId);
+            closedCount++;
         }
 
-        return expiredAuctionIds.Count;
+        return closedCount;
     }
 
     public async Task<AuctionReturnDto> CloseAuctionAsync(Guid auctionId)
@@ -54,13 +58,19 @@ public class AuctionClosingService : IAuctionClosingService
             .FirstOrDefaultAsync(auction => auction.Id == auctionId);
 
         if (auction is null)
-            throw new InvalidOperationException("Auction not found.");
+        {
+            throw new NotFoundException("Auction not found.");
+        }
 
         if (auction.Status != AuctionStatus.Active)
-            throw new InvalidOperationException("Auction is not active.");
-            
+        {
+            throw new ConflictException("Auction is not active.");
+        }
+
         if (auction.EndTime > DateTime.UtcNow)
-            throw new InvalidOperationException("Auction has not ended yet.");
+        {
+            throw new ConflictException("Auction has not ended yet.");
+        }
 
         var highestBid = auction.Bids
             .OrderByDescending(bid => bid.Amount)
@@ -113,7 +123,7 @@ public class AuctionClosingService : IAuctionClosingService
             .Include(auction => auction.Category)
             .Include(auction => auction.Images)
             .Include(auction => auction.Winner)
-            .FirstAsync(a => a.Id == auction.Id);
+            .FirstAsync(auction => auction.Id == auctionId);
 
         return _mapper.Map<AuctionReturnDto>(closedAuction);
     }
@@ -122,6 +132,8 @@ public class AuctionClosingService : IAuctionClosingService
     {
         var notification = await _notificationService.CreateAsync(userId, message);
 
-        await _realtimeNotificationService.SendNotificationAsync(userId, notification);
+        await _realtimeNotificationService.SendNotificationAsync(
+            userId,
+            notification);
     }
 }

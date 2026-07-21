@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OnlineAuctionApp.Application.Common.Exceptions;
 using OnlineAuctionApp.Application.DTOs.Notifications;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Domain.Entities;
@@ -20,16 +21,23 @@ public class NotificationService : INotificationService
 
     public async Task<NotificationReturnDto> CreateAsync(Guid userId, string message)
     {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            throw new BadRequestException("Notification message is required.");
+        }
+
         var userExists = await _context.Users
             .AnyAsync(user => user.Id == userId);
 
         if (!userExists)
-            throw new InvalidOperationException("User not found.");
+        {
+            throw new NotFoundException("User not found.");
+        }
 
         var notification = new Notification
         {
             UserId = userId,
-            Message = message,
+            Message = message.Trim(),
             IsRead = false
         };
 
@@ -50,7 +58,9 @@ public class NotificationService : INotificationService
         return _mapper.Map<List<NotificationReturnDto>>(notifications);
     }
 
-    public async Task<NotificationReturnDto> MarkAsReadAsync(Guid notificationId, Guid userId)
+    public async Task<NotificationReturnDto> MarkAsReadAsync(
+        Guid notificationId,
+        Guid userId)
     {
         var notification = await _context.Notifications
             .FirstOrDefaultAsync(notification =>
@@ -58,7 +68,9 @@ public class NotificationService : INotificationService
                 notification.UserId == userId);
 
         if (notification is null)
-            throw new InvalidOperationException("Notification not found.");
+        {
+            throw new NotFoundException("Notification not found.");
+        }
 
         notification.IsRead = true;
         notification.UpdatedDate = DateTime.UtcNow;

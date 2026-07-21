@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.Application.DTOs.Categories;
@@ -7,83 +8,71 @@ namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController : ControllerBase
+public class CategoriesController : BaseApiController
 {
     private readonly ICategoryService _categoryService;
+    private readonly IValidator<CategoryCreateDto> _categoryCreateValidator;
+    private readonly IValidator<CategoryUpdateDto> _categoryUpdateValidator;
 
-    public CategoriesController(ICategoryService categoryService)
+    public CategoriesController(
+        ICategoryService categoryService,
+        IValidator<CategoryCreateDto> categoryCreateValidator,
+        IValidator<CategoryUpdateDto> categoryUpdateValidator)
     {
         _categoryService = categoryService;
+        _categoryCreateValidator = categoryCreateValidator;
+        _categoryUpdateValidator = categoryUpdateValidator;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var categories = await _categoryService.GetAllAsync();
-        return Ok(categories);
+        return ApiSuccess(categories);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        try
-        {
-            var category = await _categoryService.GetByIdAsync(id);
-            return Ok(category);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var category = await _categoryService.GetByIdAsync(id);
+        return ApiSuccess(category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpPost]
-    public async Task<IActionResult> Create(CategoryCreateDto dto)
+    public async Task<IActionResult> Create([FromBody] CategoryCreateDto dto)
     {
-        try
+        var validationError = await ValidateRequestAsync(dto, _categoryCreateValidator);
+
+        if (validationError is not null)
         {
-            var category = await _categoryService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+            return validationError;
         }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+
+        var category = await _categoryService.CreateAsync(dto);
+        return ApiCreated(nameof(GetById), new { id = category.Id }, category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] CategoryUpdateDto dto)
     {
-        try
+        var validationError = await ValidateRequestAsync(dto, _categoryUpdateValidator);
+
+        if (validationError is not null)
         {
-            var category = await _categoryService.UpdateAsync(id, dto);
-            return Ok(category);
+            return validationError;
         }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+
+        var category = await _categoryService.UpdateAsync(id, dto);
+        return ApiSuccess(category);
     }
 
     [Authorize(Roles = "Seller,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await _categoryService.DeleteAsync(id);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Category not found.")
-            {
-                return NotFound(new { message = ex.Message });
-            }
-
-            return Conflict(new { message = ex.Message });
-        }
+        await _categoryService.DeleteAsync(id);
+        return ApiDeleted("Category deleted successfully.");
     }
 }

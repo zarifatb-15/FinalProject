@@ -3,31 +3,43 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.WebAPI.Constants;
 using OnlineAuctionApp.Application.DTOs.Auth;
+using FluentValidation;
 using OnlineAuctionApp.Application.Interfaces.Services;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
+    private readonly IValidator<RegisterDto> _registerValidator;
+    private readonly IValidator<LoginDto> _loginValidator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService,
+        IValidator<RegisterDto> registerValidator,
+        IValidator<LoginDto> loginValidator)
     {
         _authService = authService;
+        _registerValidator = registerValidator;
+        _loginValidator = loginValidator;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _registerValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var token = await _authService.RegisterAsync(dto);
-
             SetAccessTokenCookie(token);
 
-            return Ok(new
+            return ApiSuccess(new
             {
                 message = "Registered successfully.",
                 expiration = token.Expiration
@@ -35,20 +47,25 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return ApiBadRequest(ex.Message);
         }
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
+        var validationError = await ValidateRequestAsync(dto, _loginValidator);
+
+        if (validationError is not null)
+        {
+            return validationError;
+        }
         try
         {
             var token = await _authService.LoginAsync(dto);
-
             SetAccessTokenCookie(token);
 
-            return Ok(new
+            return ApiSuccess(new
             {
                 message = "Logged in successfully.",
                 expiration = token.Expiration
@@ -56,7 +73,7 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            return Unauthorized(new { message = ex.Message });
+            return ApiUnauthorized(ex.Message);
         }
     }
 
@@ -71,7 +88,7 @@ public class AuthController : ControllerBase
             .Select(role => role.Value)
             .ToList();
 
-        return Ok(new
+        return ApiSuccess(new
         {
             userId,
             username,
@@ -99,13 +116,14 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete(
-            AuthCookieNames.AccessToken,
-            new CookieOptions
-            {
-                Path = "/"
-            });
+        Response.Cookies.Delete(AuthCookieNames.AccessToken, new CookieOptions
+        {
+            Path = "/"
+        });
 
-        return Ok(new { message = "Logged out successfully." });
+        return ApiSuccess(new
+        {
+            message = "Logged out successfully."
+        });
     }
 }

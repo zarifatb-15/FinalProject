@@ -1,14 +1,14 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.Application.Interfaces.Services;
+using OnlineAuctionApp.WebAPI.Extensions;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class NotificationsController : ControllerBase
+public class NotificationsController : BaseApiController
 {
     private readonly INotificationService _notificationService;
 
@@ -20,32 +20,27 @@ public class NotificationsController : ControllerBase
     [HttpGet("my")]
     public async Task<IActionResult> GetMyNotifications()
     {
-        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(userIdValue, out var userId))
-            return Unauthorized(new { message = "Invalid user token." });
+        if (!User.TryGetUserId(out var userId))
+        {
+            return ApiUnauthorized("User is not authenticated.");
+        }
 
         var notifications = await _notificationService.GetByUserIdAsync(userId);
-
-        return Ok(notifications);
+        return ApiSuccess(notifications);
     }
 
     [HttpPatch("{notificationId}/read")]
     public async Task<IActionResult> MarkAsRead(Guid notificationId)
     {
-        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(userIdValue, out var userId))
-            return Unauthorized(new { message = "Invalid user token." });
-
-        try
+        if (!User.TryGetUserId(out var userId))
         {
-            var notification = await _notificationService.MarkAsReadAsync(notificationId, userId);
-            return Ok(notification);
+            return ApiUnauthorized("User is not authenticated.");
         }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+
+        var notification = await _notificationService.MarkAsReadAsync(
+            notificationId,
+            userId);
+
+        return ApiSuccess(notification);
     }
 }

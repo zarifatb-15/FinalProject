@@ -9,6 +9,7 @@ using OnlineAuctionApp.Infrastructure;
 using OnlineAuctionApp.Persistence;
 using OnlineAuctionApp.Persistence.Seeders;
 using Scalar.AspNetCore;
+using OnlineAuctionApp.WebAPI.Middlewares;
 using OnlineAuctionApp.WebAPI.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,6 +82,8 @@ if (app.Environment.IsDevelopment())
 }
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

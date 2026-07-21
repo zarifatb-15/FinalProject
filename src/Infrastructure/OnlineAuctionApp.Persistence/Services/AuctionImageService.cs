@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OnlineAuctionApp.Application.Common.Exceptions;
 using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Domain.Entities;
@@ -13,7 +14,10 @@ public class AuctionImageService : IAuctionImageService
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
-    public AuctionImageService(AppDbContext context, IFileService fileService, IMapper mapper)
+    public AuctionImageService(
+        AppDbContext context,
+        IFileService fileService,
+        IMapper mapper)
     {
         _context = context;
         _fileService = fileService;
@@ -26,17 +30,35 @@ public class AuctionImageService : IAuctionImageService
         string fileName,
         Guid sellerId)
     {
+        if (fileStream.Length == 0)
+        {
+            throw new BadRequestException("Image file is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            throw new BadRequestException("Image file name is required.");
+        }
+
         var auction = await _context.Auctions
             .Include(auction => auction.Images)
             .FirstOrDefaultAsync(auction => auction.Id == auctionId);
 
         if (auction is null)
-            throw new InvalidOperationException("Auction not found.");
+        {
+            throw new NotFoundException("Auction not found.");
+        }
 
         if (auction.SellerId != sellerId)
-            throw new UnauthorizedAccessException("You can only upload images to your own auction.");
+        {
+            throw new ForbiddenException(
+                "You can only upload images to your own auction.");
+        }
 
-        var imageUrl = await _fileService.SaveFileAsync(fileStream, fileName, "auctions");
+        var imageUrl = await _fileService.SaveFileAsync(
+            fileStream,
+            fileName,
+            "auctions");
 
         var isFirstImage = !auction.Images.Any();
 
