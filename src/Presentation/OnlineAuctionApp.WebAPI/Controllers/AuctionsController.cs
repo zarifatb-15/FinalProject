@@ -1,10 +1,10 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineAuctionApp.Application.DTOs.Auctions;
 using OnlineAuctionApp.Application.DTOs.Bids;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.WebAPI.Extensions;
-using FluentValidation;
 using OnlineAuctionApp.WebAPI.Requests;
 
 namespace OnlineAuctionApp.WebAPI.Controllers;
@@ -39,63 +39,50 @@ public class AuctionsController : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] AuctionFilterDto filter)
     {
-        try
-        {
-            var auctions = await _auctionService.GetAllAsync(filter);
-            return ApiSuccess(auctions);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiBadRequest(ex.Message);
-        }
+        var auctions = await _auctionService.GetAllAsync(filter);
+        return ApiSuccess(auctions);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        try
-        {
-            var auction = await _auctionService.GetByIdAsync(id);
-            return ApiSuccess(auction);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiNotFound(ex.Message);
-        }
+        var auction = await _auctionService.GetByIdAsync(id);
+        return ApiSuccess(auction);
     }
 
     [Authorize(Roles = "Seller")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AuctionCreateDto dto)
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
-        var validationError = await ValidateRequestAsync(dto, _auctionCreateValidator);
+
+        var validationError = await ValidateRequestAsync(
+            dto,
+            _auctionCreateValidator);
 
         if (validationError is not null)
         {
             return validationError;
         }
-        try
-        {
-            var auction = await _auctionService.CreateAsync(dto, sellerId);
-            return ApiCreated(nameof(GetById), new { id = auction.Id }, auction);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiBadRequest(ex.Message);
-        }
+
+        var auction = await _auctionService.CreateAsync(dto, sellerId);
+        return ApiCreated(nameof(GetById), new { id = auction.Id }, auction);
     }
 
     [Authorize(Roles = "Seller")]
     [HttpGet("seller/my")]
     public async Task<IActionResult> GetMyAuctions()
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
 
         var auctions = await _auctionService.GetBySellerIdAsync(sellerId);
@@ -106,9 +93,11 @@ public class AuctionsController : BaseApiController
     [HttpGet("seller/active")]
     public async Task<IActionResult> GetMyActiveAuctions()
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
 
         var auctions = await _auctionService.GetActiveBySellerIdAsync(sellerId);
@@ -119,9 +108,11 @@ public class AuctionsController : BaseApiController
     [HttpGet("seller/completed")]
     public async Task<IActionResult> GetMyCompletedAuctions()
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
 
         var auctions = await _auctionService.GetCompletedBySellerIdAsync(sellerId);
@@ -132,9 +123,11 @@ public class AuctionsController : BaseApiController
     [HttpGet("seller/dashboard-summary")]
     public async Task<IActionResult> GetSellerDashboardSummary()
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
 
         var summary = await _auctionService.GetSellerDashboardSummaryAsync(sellerId);
@@ -148,9 +141,11 @@ public class AuctionsController : BaseApiController
         Guid auctionId,
         [FromForm] AuctionImageUploadRequest request)
     {
-        if (!User.TryGetUserId(out var sellerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var sellerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
 
         if (request.Image is null || request.Image.Length == 0)
@@ -158,76 +153,48 @@ public class AuctionsController : BaseApiController
             return ApiBadRequest("Image is required.");
         }
 
-        try
-        {
-            await using var stream = request.Image.OpenReadStream();
+        await using var stream = request.Image.OpenReadStream();
 
-            var image = await _auctionImageService.AddImageAsync(
-                auctionId,
-                stream,
-                request.Image.FileName,
-                sellerId);
+        var image = await _auctionImageService.AddImageAsync(
+            auctionId,
+            stream,
+            request.Image.FileName,
+            sellerId);
 
-            return ApiSuccess(image);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return ApiForbidden(ex.Message);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Auction not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
-
-            return ApiBadRequest(ex.Message);
-        }
+        return ApiSuccess(image);
     }
 
     [Authorize(Roles = "Buyer")]
     [HttpPost("{auctionId}/bids")]
-    public async Task<IActionResult> PlaceBid(Guid auctionId, [FromBody] BidCreateDto dto)
+    public async Task<IActionResult> PlaceBid(
+        Guid auctionId,
+        [FromBody] BidCreateDto dto)
     {
-        if (!User.TryGetUserId(out var buyerId))
+        var authError = GetCurrentUserIdOrUnauthorized(out var buyerId);
+
+        if (authError is not null)
         {
-            return ApiUnauthorized("Invalid user token.");
+            return authError;
         }
-        var validationError = await ValidateRequestAsync(dto, _bidCreateValidator);
+
+        var validationError = await ValidateRequestAsync(
+            dto,
+            _bidCreateValidator);
 
         if (validationError is not null)
         {
             return validationError;
         }
 
-        try
-        {
-            var bid = await _bidService.PlaceBidAsync(auctionId, buyerId, dto);
-            return ApiSuccess(bid);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Auction not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
-
-            return ApiBadRequest(ex.Message);
-        }
+        var bid = await _bidService.PlaceBidAsync(auctionId, buyerId, dto);
+        return ApiSuccess(bid);
     }
 
     [HttpGet("{auctionId}/bids")]
     public async Task<IActionResult> GetBidHistory(Guid auctionId)
     {
-        try
-        {
-            var bids = await _bidService.GetByAuctionIdAsync(auctionId);
-            return ApiSuccess(bids);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return ApiNotFound(ex.Message);
-        }
+        var bids = await _bidService.GetByAuctionIdAsync(auctionId);
+        return ApiSuccess(bids);
     }
 
     [Authorize]
@@ -246,19 +213,17 @@ public class AuctionsController : BaseApiController
     [HttpPost("{auctionId}/close")]
     public async Task<IActionResult> CloseAuction(Guid auctionId)
     {
-        try
-        {
-            var auction = await _auctionClosingService.CloseAuctionAsync(auctionId);
-            return ApiSuccess(auction);
-        }
-        catch (InvalidOperationException ex)
-        {
-            if (ex.Message == "Auction not found.")
-            {
-                return ApiNotFound(ex.Message);
-            }
+        var auction = await _auctionClosingService.CloseAuctionAsync(auctionId);
+        return ApiSuccess(auction);
+    }
 
-            return ApiBadRequest(ex.Message);
+    private IActionResult? GetCurrentUserIdOrUnauthorized(out Guid userId)
+    {
+        if (User.TryGetUserId(out userId))
+        {
+            return null;
         }
+
+        return ApiUnauthorized("Invalid user token.");
     }
 }
