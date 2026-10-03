@@ -15,65 +15,194 @@
       };
     </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+  <body
+    class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300"
+  >
     <div id="navbar-container"></div>
 
     <main class="flex-1 flex items-center justify-center w-full px-4 py-8">
-      <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl max-w-md w-full space-y-6 transition-colors duration-300">
+      <div
+        class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl max-w-md w-full space-y-6 transition-colors duration-300"
+      >
         <div class="text-center">
-          <h1 class="text-2xl font-black text-gray-900 dark:text-white" data-i18n="register_title">Hesab Yaradın</h1>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1" data-i18n="login_subtitle">Davam etmək üçün qeydiyyatdan keçin</p>
+          <h1
+            class="text-2xl font-black text-gray-900 dark:text-white"
+            data-i18n="register_title"
+          >
+            Hesab Yaradın
+          </h1>
+          <p
+            class="text-xs text-gray-400 dark:text-gray-500 mt-1"
+            data-i18n="login_subtitle"
+          >
+            Davam etmək üçün qeydiyyatdan keçin
+          </p>
         </div>
-        <form id="reg-form" class="space-y-4">
+
+        <form id="reg-form" class="space-y-4" autocomplete="off">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_firstname">Ad</label>
-              <input type="text" id="firstName" required
-                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+              <label
+                class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+                data-i18n="register_firstname"
+              >
+                Ad
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                required
+                autocomplete="off"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+              />
             </div>
+
             <div>
-              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_lastname">Soyad</label>
-              <input type="text" id="lastName" required
-                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+              <label
+                class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+                data-i18n="register_lastname"
+              >
+                Soyad
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                required
+                  autocomplete="off"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+              />
             </div>
           </div>
+
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_username">İstifadəçi Adı</label>
-            <input type="text" id="username" required
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="register_username"
+            >
+              İstifadəçi Adı
+            </label>
+            <input
+              type="text"
+              id="username"
+              required
+              autocomplete="off"
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+            />
           </div>
+
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_email">Email</label>
-            <input type="email" id="email" required
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="register_email"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              required
+              autocomplete="off"
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600"
+            />
           </div>
+
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_role">Rol Seçimi</label>
-            <select id="role"
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-indigo-600">
-              <option value="Buyer" class="dark:bg-slate-700" data-i18n="role_buyer">Alıcı (Buyer)</option>
-              <option value="Seller" class="dark:bg-slate-700" data-i18n="role_seller">Satıcı (Seller)</option>
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="register_role"
+            >
+              Rol Seçimi
+            </label>
+            <select
+              id="role"
+              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-indigo-600"
+            >
+              <option
+                value="Buyer"
+                class="dark:bg-slate-700"
+                data-i18n="role_buyer"
+              >
+                Alıcı (Buyer)
+              </option>
+              <option
+                value="Seller"
+                class="dark:bg-slate-700"
+                data-i18n="role_seller"
+              >
+                Satıcı (Seller)
+              </option>
             </select>
           </div>
+
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_password">Şifrə</label>
-            <input type="password" id="password" required
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="register_password"
+            >
+              Şifrə
+            </label>
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                required
+                autocomplete="new-password"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 pr-11 text-sm focus:outline-indigo-600"
+              />
+              <button
+                type="button"
+                onclick="togglePassword('password', this)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
           </div>
+
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="register_confirm">Şifrə Təkrarı</label>
-            <input type="password" id="confirmPassword" required
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-indigo-600" />
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="register_confirm"
+            >
+              Şifrə Təkrarı
+            </label>
+            <div class="relative">
+              <input
+                type="password"
+                id="confirmPassword"
+                required
+                autocomplete="new-password"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-2.5 pr-11 text-sm focus:outline-indigo-600"
+              />
+              <button
+                type="button"
+                onclick="togglePassword('confirmPassword', this)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
           </div>
-          <button type="submit"
+
+          <button
+            type="submit"
             class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition"
-            data-i18n="register_btn">
+            data-i18n="register_btn"
+          >
             Qeydiyyatı Tamamla
           </button>
         </form>
+
         <p class="text-center text-xs text-gray-500 dark:text-gray-400">
           <span data-i18n="login_no_account">Artıq hesabınız var?</span>
-          <a href="login.html" class="text-indigo-600 font-bold hover:underline" data-i18n="login_register_link">Daxil Ol</a>
+          <a
+            href="login.html"
+            class="text-indigo-600 font-bold hover:underline"
+            data-i18n="login_register_link"
+          >
+            Daxil Ol
+          </a>
         </p>
       </div>
     </main>
@@ -85,35 +214,62 @@
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/common.js"></script>
+
     <script>
-      document.getElementById("reg-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = {
-          firstName: document.getElementById("firstName").value,
-          lastName: document.getElementById("lastName").value,
-          username: document.getElementById("username").value,
-          email: document.getElementById("email").value,
-          password: document.getElementById("password").value,
-          confirmPassword: document.getElementById("confirmPassword").value,
-          role: document.getElementById("role").value,
-        };
-        try {
-          await Auth.register(data);
-          Common.showToast("Qeydiyyat uğurla tamamlandı!", "success");
-          // Backend register sets cookie automatically, so we can redirect directly
-          const user = await Auth.init();
-          if (user) {
-            if (Auth.hasRole("Admin")) window.location.href = "admin-dashboard.html";
-            else if (Auth.hasRole("Seller")) window.location.href = "seller-dashboard.html";
-            else window.location.href = "auctions.html";
-          } else {
-            setTimeout(() => (window.location.href = "login.html"), 1500);
-          }
-        } catch (err) {
-          Common.showToast(err.errors || "Qeydiyyat zamanı xəta baş verdi");
+      function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector("i");
+
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
         }
-      });
+      }
+
+      document
+        .getElementById("reg-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const data = {
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            confirmPassword: document.getElementById("confirmPassword").value,
+            role: document.getElementById("role").value,
+          };
+
+          try {
+            await Auth.register(data);
+            Common.showToast("Qeydiyyat uğurla tamamlandı!", "success");
+
+            const user = await Auth.init();
+
+            if (user) {
+              if (Auth.hasRole("Admin")) {
+                window.location.href = "admin-dashboard.html";
+              } else if (Auth.hasRole("Seller")) {
+                window.location.href = "seller-dashboard.html";
+              } else {
+                window.location.href = "auctions.html";
+              }
+            } else {
+              setTimeout(() => (window.location.href = "login.html"), 1500);
+            }
+          } catch (err) {
+            Common.showToast(
+              err.errors || "Qeydiyyat zamanı xəta baş verdi",
+              "error",
+            );
+          }
+        });
     </script>
   </body>
 </html>
-

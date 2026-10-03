@@ -12,23 +12,59 @@ const Common = {
   },
 
   // 0b. COUNTDOWN FORMATTER
-  formatCountdown(endTime) {
-    if (!endTime) return { text: "—", isEnded: true };
-    const now = new Date();
-    const end = new Date(endTime);
-    const diff = end - now;
+  parseServerDate(value) {
+    if (!value) return null;
 
-    if (diff <= 0) return { text: "Bitib", isEnded: true };
+    // Backend UTC DateTime-i bəzən "Z" olmadan göndərir.
+    // Browser onu local time kimi oxuyanda countdown səhv "Bitib" göstərə bilər.
+    if (typeof value === "string" && !value.endsWith("Z") && !value.includes("+")) {
+        return new Date(value + "Z");
+    }
+
+    return new Date(value);
+},
+
+formatCountdown(endTime) {
+    const end = this.parseServerDate(endTime);
+
+    if (!end || isNaN(end.getTime())) {
+        return {
+            text: "Vaxt yoxdur",
+            isEnded: true,
+        };
+    }
+
+    const diff = end.getTime() - Date.now();
+
+    if (diff <= 0) {
+        return {
+            text: "Bitib",
+            isEnded: true,
+        };
+    }
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
 
-    if (days > 0) return { text: `${days}g ${hours}s`, isEnded: false };
-    if (hours > 0) return { text: `${hours}s ${minutes}d`, isEnded: false };
-    return { text: `${minutes}d ${seconds}s`, isEnded: false };
-  },
+    let text = "";
+
+    if (days > 0) {
+        text = `${days}g ${hours}s`;
+    } else if (hours > 0) {
+        text = `${hours}s ${minutes}d`;
+    } else if (minutes > 0) {
+        text = `${minutes}d ${seconds}s`;
+    } else {
+        text = `${seconds}s`;
+    }
+
+    return {
+        text,
+        isEnded: false,
+    };
+},
 
   // 1. NAVBAR RENDERER
   async renderNavbar() {
@@ -198,3 +234,47 @@ document.addEventListener("DOMContentLoaded", () => {
   Common.renderNavbar();
   Common.renderFooter();
 });
+
+/* Local demo helper: refresh unread notification badge in navbar */
+(function () {
+  async function refreshUnreadNotificationBadge() {
+    const badge = document.getElementById("unread-count-badge");
+
+    if (!badge || typeof API === "undefined") {
+      return;
+    }
+
+    try {
+      const list = await API.get("/api/Notifications/my");
+      const unread = Array.isArray(list)
+        ? list.filter((n) => !n.isRead).length
+        : 0;
+
+      if (unread > 0) {
+        badge.textContent = unread > 9 ? "9+" : unread;
+        badge.className =
+          "absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center";
+      } else {
+        badge.textContent = "";
+        badge.classList.add("hidden");
+      }
+    } catch (error) {
+      // User may be logged out; keep badge hidden.
+      badge.classList.add("hidden");
+    }
+  }
+
+  function scheduleBadgeRefresh() {
+    [300, 800, 1500, 3000].forEach((time) => {
+      setTimeout(refreshUnreadNotificationBadge, time);
+    });
+  }
+
+  window.refreshUnreadNotificationBadge = refreshUnreadNotificationBadge;
+
+  document.addEventListener("DOMContentLoaded", scheduleBadgeRefresh);
+  window.addEventListener("pageshow", scheduleBadgeRefresh);
+  window.addEventListener("focus", refreshUnreadNotificationBadge);
+
+  setInterval(refreshUnreadNotificationBadge, 10000);
+})();

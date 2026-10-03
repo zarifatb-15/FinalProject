@@ -15,7 +15,9 @@
       };
     </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+  <body
+    class="bg-slate-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300"
+  >
     <div id="navbar-container"></div>
 
     <main class="flex-1 flex items-center justify-center w-full px-4 py-8">
@@ -23,35 +25,56 @@
         class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl max-w-md w-full space-y-6 transition-colors duration-300"
       >
         <div class="text-center">
-          <h1 class="text-2xl font-black text-gray-900 dark:text-white" data-i18n="login_title">
+          <h1
+            class="text-2xl font-black text-gray-900 dark:text-white"
+            data-i18n="login_title"
+          >
             BidVerse-ə Giriş
           </h1>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1" data-i18n="login_subtitle">
+          <p
+            class="text-xs text-gray-400 dark:text-gray-500 mt-1"
+            data-i18n="login_subtitle"
+          >
             Davam etmək üçün hesabınıza daxil olun
           </p>
         </div>
-        <form id="login-form" class="space-y-4">
+        <form id="login-form" class="space-y-4" autocomplete="off">
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="login_username_label"
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="login_username_label"
               >İstifadəçi adı və ya Email</label
             >
             <input
               type="text"
               id="usernameOrEmail"
               required
+              autocomplete="off"
               class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-indigo-600"
             />
           </div>
           <div>
-            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1" data-i18n="login_password_label"
+            <label
+              class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1"
+              data-i18n="login_password_label"
               >Şifrə</label
             >
-            <input
-              type="password"
-              id="password"
-              required
-              class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-indigo-600"
-            />
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                required
+                autocomplete="new-password"
+                class="w-full border border-gray-200 dark:border-gray-600 dark:bg-slate-700 dark:text-white rounded-xl px-4 py-3 pr-11 text-sm focus:outline-indigo-600"
+              />
+              <button
+                type="button"
+                onclick="togglePassword('password', this)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
           </div>
           <button
             type="submit"
@@ -81,20 +104,51 @@
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/common.js"></script>
     <script>
+      function clearLoginFields() {
+  document.getElementById("usernameOrEmail").value = "";
+  document.getElementById("password").value = "";
+}
+
+window.addEventListener("pageshow", clearLoginFields);
+window.addEventListener("load", () => {
+  [50, 200, 500, 1000, 1500].forEach((time) => {
+    setTimeout(clearLoginFields, time);
+  });
+});
+
+      function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector("i");
+
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+
       document
         .getElementById("login-form")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+
           try {
-            const user = await Auth.login(
+            await Auth.login(
               document.getElementById("usernameOrEmail").value,
               document.getElementById("password").value,
             );
-            if (Auth.hasRole("Admin"))
+
+            if (Auth.hasRole("Admin")) {
               window.location.href = "admin-dashboard.html";
-            else if (Auth.hasRole("Seller"))
+            } else if (Auth.hasRole("Seller")) {
               window.location.href = "seller-dashboard.html";
-            else window.location.href = "auctions.html";
+            } else {
+              window.location.href = "auctions.html";
+            }
           } catch (err) {
             Common.showToast(
               err.errors || "Giriş zamanı xəta baş verdi",

@@ -1,5 +1,6 @@
 using System.Text;
 using OnlineAuctionApp.Application.Interfaces.Services;
+using OnlineAuctionApp.Application.Common.Localization;
 using OnlineAuctionApp.WebAPI.Hubs;
 using OnlineAuctionApp.WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,6 +21,8 @@ builder.Services.AddSignalR();
 builder.Services.AddOpenApi();
 
 builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAppMessageService, AppMessageService>();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddScoped<IRealtimeNotificationService, RealtimeNotificationService>();
@@ -69,9 +72,12 @@ builder.Services.AddAuthentication(options =>
         {
             context.HandleResponse();
 
+            var messageService = context.HttpContext.RequestServices
+                .GetRequiredService<IAppMessageService>();
+
             var message = string.IsNullOrWhiteSpace(context.Error)
-                ? "Authentication is required."
-                : "Invalid or expired authentication token.";
+                ? messageService.Get(MessageKeys.AuthRequired)
+                : messageService.Get(MessageKeys.InvalidToken);
 
             var response = ResponseModelHelper
                 .CreateUnauthorizedResponse<string>(message);
@@ -84,9 +90,12 @@ builder.Services.AddAuthentication(options =>
 
         OnForbidden = async context =>
         {
+            var messageService = context.HttpContext.RequestServices
+                .GetRequiredService<IAppMessageService>();
+
             var response = ResponseModelHelper
                 .CreateForbiddenResponse<string>(
-                    "You are not allowed to access this resource.");
+                    messageService.Get(MessageKeys.Forbidden));
 
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             context.Response.ContentType = "application/json";
