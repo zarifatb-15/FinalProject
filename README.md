@@ -600,23 +600,15 @@ cd FinalProject
 ```
 
 ---
+### 2. Configure Secrets
 
-### 2. Configure the Database
+Connection string and JWT key are not stored in the repository.
+Set them with .NET user-secrets:
 
-Update the connection string in:
+```bash
+dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost,1433;Database=OnlineAuctionDb;User Id=YOUR_USER;Password=YOUR_PASSWORD;TrustServerCertificate=True;" --project src/Presentation/OnlineAuctionApp.WebAPI
 
-```txt
-src/Presentation/OnlineAuctionApp.WebAPI/appsettings.Development.json
-```
-
-Example:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost,1433;Database=OnlineAuctionDb;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=True;"
-  }
-}
+dotnet user-secrets set "Jwt:Key" "<random string, at least 32 characters>" --project src/Presentation/OnlineAuctionApp.WebAPI
 ```
 
 ---
