@@ -206,12 +206,10 @@ const Common = {
             document.body.appendChild(toastBox);
         }
 
-        const bgColors = {
-            success: "bg-emerald-600 text-white",
-            error: "bg-rose-600 text-white",
-            info: "bg-indigo-600 text-white",
-            warning: "bg-amber-500 text-white",
-        };
+        Common.showToast("Uğurludur", "success");
+        Common.showToast("Xəta baş verdi", "error");
+        Common.showToast("Diqqət!", "warning");
+        Common.showToast("Məlumat", "info");
 
         const toast = document.createElement("div");
         toast.className = `${bgColors[type] || bgColors.info} px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0`;
