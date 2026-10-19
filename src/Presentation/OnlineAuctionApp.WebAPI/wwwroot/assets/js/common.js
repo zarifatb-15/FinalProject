@@ -1,112 +1,112 @@
 const Common = {
-  // 0. CURRENCY FORMATTER
-  formatCurrency(amount) {
-    if (amount === null || amount === undefined) return "$0.00";
-    return (
-      "$" +
-      Number(amount).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })
-    );
-  },
+    // 0. CURRENCY FORMATTER
+    formatCurrency(amount) {
+        if (amount === null || amount === undefined) return "$0.00";
+        return (
+            "$" +
+            Number(amount).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+        );
+    },
 
-  // 0b. COUNTDOWN FORMATTER
-  parseServerDate(value) {
-    if (!value) return null;
+    // 0b. COUNTDOWN FORMATTER
+    parseServerDate(value) {
+        if (!value) return null;
 
-    // Backend UTC DateTime-i bəzən "Z" olmadan göndərir.
-    // Browser onu local time kimi oxuyanda countdown səhv "Bitib" göstərə bilər.
-    if (typeof value === "string" && !value.endsWith("Z") && !value.includes("+")) {
-        return new Date(value + "Z");
-    }
+        // Backend UTC DateTime-i bəzən "Z" olmadan göndərir.
+        // Browser onu local time kimi oxuyanda countdown səhv "Bitib" göstərə bilər.
+        if (typeof value === "string" && !value.endsWith("Z") && !value.includes("+")) {
+            return new Date(value + "Z");
+        }
 
-    return new Date(value);
-},
+        return new Date(value);
+    },
 
-formatCountdown(endTime) {
-    const end = this.parseServerDate(endTime);
+    formatCountdown(endTime) {
+        const end = this.parseServerDate(endTime);
 
-    if (!end || isNaN(end.getTime())) {
+        if (!end || isNaN(end.getTime())) {
+            return {
+                text: "Vaxt yoxdur",
+                isEnded: true,
+            };
+        }
+
+        const diff = end.getTime() - Date.now();
+
+        if (diff <= 0) {
+            return {
+                text: "Bitib",
+                isEnded: true,
+            };
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        let text = "";
+
+        if (days > 0) {
+            text = `${days}g ${hours}s`;
+        } else if (hours > 0) {
+            text = `${hours}s ${minutes}d`;
+        } else if (minutes > 0) {
+            text = `${minutes}d ${seconds}s`;
+        } else {
+            text = `${seconds}s`;
+        }
+
         return {
-            text: "Vaxt yoxdur",
-            isEnded: true,
+            text,
+            isEnded: false,
         };
-    }
+    },
 
-    const diff = end.getTime() - Date.now();
+    // 1. NAVBAR RENDERER
+    async renderNavbar() {
+        const navContainer = document.getElementById("navbar-container");
+        if (!navContainer) return;
 
-    if (diff <= 0) {
-        return {
-            text: "Bitib",
-            isEnded: true,
-        };
-    }
+        let user = null;
+        if (typeof Auth !== "undefined" && Auth.init) {
+            user = await Auth.init();
+        }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+        const currentLang =
+            typeof I18n !== "undefined"
+                ? I18n.lang
+                : localStorage.getItem("app_lang") || "az";
 
-    let text = "";
-
-    if (days > 0) {
-        text = `${days}g ${hours}s`;
-    } else if (hours > 0) {
-        text = `${hours}s ${minutes}d`;
-    } else if (minutes > 0) {
-        text = `${minutes}d ${seconds}s`;
-    } else {
-        text = `${seconds}s`;
-    }
-
-    return {
-        text,
-        isEnded: false,
-    };
-},
-
-  // 1. NAVBAR RENDERER
-  async renderNavbar() {
-    const navContainer = document.getElementById("navbar-container");
-    if (!navContainer) return;
-
-    let user = null;
-    if (typeof Auth !== "undefined" && Auth.init) {
-      user = await Auth.init();
-    }
-
-    const currentLang =
-      typeof I18n !== "undefined"
-        ? I18n.lang
-        : localStorage.getItem("app_lang") || "az";
-
-    // Əsas menyu linkləri
-    let navLinks = `
+        // Əsas menyu linkləri
+        let navLinks = `
             <a href="index.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_home">Ana Səhifə</a>
             <a href="auctions.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_auctions">Hərraclar</a>
         `;
 
-    if (!user) {
-      navLinks += `
+        if (!user) {
+            navLinks += `
                 <a href="login.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_login">Daxil Ol</a>
                 <a href="register.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition font-medium" data-i18n="nav_register">Qeydiyyat</a>
             `;
-    } else {
-      if (typeof Auth !== "undefined" && Auth.hasRole) {
-        if (Auth.hasRole("Seller")) {
-          navLinks += `<a href="seller-dashboard.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_seller_panel">Satıcı Paneli</a>`;
-        }
-        if (Auth.hasRole("Admin")) {
-          navLinks += `<a href="admin-dashboard.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_admin_panel">Admin Paneli</a>`;
-        }
-        navLinks += `<a href="categories.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_categories">Kategoriyalar</a>`;
-      }
+        } else {
+            if (typeof Auth !== "undefined" && Auth.hasRole) {
+                if (Auth.hasRole("Seller")) {
+                    navLinks += `<a href="seller-dashboard.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_seller_panel">Satıcı Paneli</a>`;
+                }
+                if (Auth.hasRole("Admin")) {
+                    navLinks += `<a href="admin-dashboard.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_admin_panel">Admin Paneli</a>`;
+                }
+                navLinks += `<a href="categories.html" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-i18n="nav_categories">Kategoriyalar</a>`;
+            }
 
-      const username = user.username || user.email || "İstifadəçi";
-      const userInitial = username.charAt(0).toUpperCase();
+            const username = user.username || user.email || "İstifadəçi";
+            const userInitial = username.charAt(0).toUpperCase();
 
-      navLinks += `
+            navLinks += `
                 <a href="notifications.html" class="relative hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                     <i class="fa-solid fa-bell text-xl"></i>
                     <span id="unread-count-badge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">0</span>
@@ -130,10 +130,10 @@ formatCountdown(endTime) {
     </div>
 </div>
             `;
-    }
+        }
 
-    // Dark Mode və Dil Seçimi
-    navLinks += `
+        // Dark Mode və Dil Seçimi
+        navLinks += `
             <div class="flex items-center space-x-3 ml-2 pl-3 border-l border-gray-200 dark:border-gray-700">
                 <button onclick="Theme.toggle()" type="button" class="p-2 text-gray-600 dark:text-amber-400 hover:text-indigo-600 transition flex items-center justify-center">
                     <i class="fa-solid fa-moon text-lg dark:hidden"></i>
@@ -148,8 +148,8 @@ formatCountdown(endTime) {
             </div>
         `;
 
-    // Navbar HTML - Həm Light, həm Dark Mode dəstəkli arxa fonla
-    navContainer.innerHTML = `
+        // Navbar HTML - Həm Light, həm Dark Mode dəstəkli arxa fonla
+        navContainer.innerHTML = `
             <header class="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 text-gray-800 dark:text-gray-100 transition-colors duration-300">
                 <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <a href="index.html" class="flex items-center space-x-2 group">
@@ -169,112 +169,114 @@ formatCountdown(endTime) {
             </header>
         `;
 
-    if (typeof I18n !== "undefined") {
-      I18n.apply();
-    }
-  },
+        if (typeof I18n !== "undefined") {
+            I18n.apply();
+        }
+    },
 
-  // 2. FOOTER RENDERER
-  renderFooter() {
-    const footerContainer = document.getElementById("footer-container");
-    if (!footerContainer) return;
+    // 2. FOOTER RENDERER
+    renderFooter() {
+        const footerContainer = document.getElementById("footer-container");
+        if (!footerContainer) return;
 
-    const year = new Date().getFullYear();
-    footerContainer.innerHTML = `
+        const year = new Date().getFullYear();
+        footerContainer.innerHTML = `
             <footer class="bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 py-8 mt-auto transition-colors duration-300">
                 <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500 dark:text-gray-400">
                     <p>&copy; ${year} <span class="font-bold text-gray-800 dark:text-white">BidVerse</span>. Bütün hüquqlar qorunur.</p>
                 </div>
             </footer>
         `;
-  },
+    },
 
-  // 3. TOAST BİLDİRİŞLƏRİ
-  showToast(message, type = "info") {
-    if (!message || message === "undefined") {
-      message = "Əməliyyat zamanı xəta baş verdi.";
-    }
-    if (Array.isArray(message)) {
-      message = message.join("<br>");
-    }
-    let toastBox = document.getElementById("toast-container");
-    if (!toastBox) {
-      toastBox = document.createElement("div");
-      toastBox.id = "toast-container";
-      toastBox.className =
-        "fixed bottom-5 right-5 z-50 flex flex-col space-y-2";
-      document.body.appendChild(toastBox);
-    }
+    // 3. TOAST BİLDİRİŞLƏRİ
+    showToast(message, type = "info") {
+        if (!message || message === "undefined") {
+            message = "Əməliyyat zamanı xəta baş verdi.";
+        }
+        if (Array.isArray(message)) {
+            message = message.join("\n");
+        }
+        let toastBox = document.getElementById("toast-container");
+        if (!toastBox) {
+            toastBox = document.createElement("div");
+            toastBox.id = "toast-container";
+            toastBox.className =
+                "fixed bottom-5 right-5 z-50 flex flex-col space-y-2";
+            document.body.appendChild(toastBox);
+        }
 
-    const bgColors = {
-      success: "bg-emerald-600 text-white",
-      error: "bg-rose-600 text-white",
-      info: "bg-indigo-600 text-white",
-      warning: "bg-amber-500 text-white",
-    };
+        Common.showToast("Uğurludur", "success");
+        Common.showToast("Xəta baş verdi", "error");
+        Common.showToast("Diqqət!", "warning");
+        Common.showToast("Məlumat", "info");
 
-    const toast = document.createElement("div");
-    toast.className = `${bgColors[type] || bgColors.info} px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0`;
-    toast.innerHTML = `<span>${message}</span>`;
+        const toast = document.createElement("div");
+        toast.className = `${bgColors[type] || bgColors.info} px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0`;
+        const messageElement = document.createElement("span");
+        messageElement.textContent = message;
+        messageElement.style.whiteSpace = "pre-line";
 
-    toastBox.appendChild(toast);
+        toast.appendChild(messageElement);
 
-    setTimeout(() => {
-      toast.classList.remove("translate-y-2", "opacity-0");
-    }, 10);
+        toastBox.appendChild(toast);
 
-    setTimeout(() => {
-      toast.classList.add("opacity-0", "translate-y-2");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  },
+        setTimeout(() => {
+            toast.classList.remove("translate-y-2", "opacity-0");
+        }, 10);
+
+        setTimeout(() => {
+            toast.classList.add("opacity-0", "translate-y-2");
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    },
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  Common.renderNavbar();
-  Common.renderFooter();
+    Common.renderNavbar();
+    Common.renderFooter();
 });
 
 /* Local demo helper: refresh unread notification badge in navbar */
 (function () {
-  async function refreshUnreadNotificationBadge() {
-    const badge = document.getElementById("unread-count-badge");
+    async function refreshUnreadNotificationBadge() {
+        const badge = document.getElementById("unread-count-badge");
 
-    if (!badge || typeof API === "undefined") {
-      return;
+        if (!badge || typeof API === "undefined") {
+            return;
+        }
+
+        try {
+            const list = await API.get("/api/Notifications/my");
+            const unread = Array.isArray(list)
+                ? list.filter((n) => !n.isRead).length
+                : 0;
+
+            if (unread > 0) {
+                badge.textContent = unread > 9 ? "9+" : unread;
+                badge.className =
+                    "absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center";
+            } else {
+                badge.textContent = "";
+                badge.classList.add("hidden");
+            }
+        } catch (error) {
+            // User may be logged out; keep badge hidden.
+            badge.classList.add("hidden");
+        }
     }
 
-    try {
-      const list = await API.get("/api/Notifications/my");
-      const unread = Array.isArray(list)
-        ? list.filter((n) => !n.isRead).length
-        : 0;
-
-      if (unread > 0) {
-        badge.textContent = unread > 9 ? "9+" : unread;
-        badge.className =
-          "absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center";
-      } else {
-        badge.textContent = "";
-        badge.classList.add("hidden");
-      }
-    } catch (error) {
-      // User may be logged out; keep badge hidden.
-      badge.classList.add("hidden");
+    function scheduleBadgeRefresh() {
+        [300, 800, 1500, 3000].forEach((time) => {
+            setTimeout(refreshUnreadNotificationBadge, time);
+        });
     }
-  }
 
-  function scheduleBadgeRefresh() {
-    [300, 800, 1500, 3000].forEach((time) => {
-      setTimeout(refreshUnreadNotificationBadge, time);
-    });
-  }
+    window.refreshUnreadNotificationBadge = refreshUnreadNotificationBadge;
 
-  window.refreshUnreadNotificationBadge = refreshUnreadNotificationBadge;
+    document.addEventListener("DOMContentLoaded", scheduleBadgeRefresh);
+    window.addEventListener("pageshow", scheduleBadgeRefresh);
+    window.addEventListener("focus", refreshUnreadNotificationBadge);
 
-  document.addEventListener("DOMContentLoaded", scheduleBadgeRefresh);
-  window.addEventListener("pageshow", scheduleBadgeRefresh);
-  window.addEventListener("focus", refreshUnreadNotificationBadge);
-
-  setInterval(refreshUnreadNotificationBadge, 10000);
+    setInterval(refreshUnreadNotificationBadge, 10000);
 })();
