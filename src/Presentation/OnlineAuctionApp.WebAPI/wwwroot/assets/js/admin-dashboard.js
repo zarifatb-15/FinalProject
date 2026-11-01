@@ -262,48 +262,102 @@ const AdminDashboard = {
     async loadAuctions() {
         try {
             this.auctions = await API.get('/api/Admin/auctions');
+
             const tbody = document.getElementById('admin-auctions-table');
             if (!tbody) return;
 
+            tbody.replaceChildren();
+
             if (!this.auctions || this.auctions.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-400">Hərrac tapılmadı.</td></tr>`;
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center py-8 text-gray-400">
+                        Hərrac tapılmadı.
+                    </td>
+                </tr>
+            `;
                 return;
             }
 
-            tbody.innerHTML = this.auctions.map(a => {
+            this.auctions.forEach(a => {
                 const status = a.status || '-';
                 const isActive = status === 'Active';
 
-                return `
-                    <tr class="border-b border-gray-800/50 hover:bg-gray-800/20 transition">
-                        <td class="py-3 px-4 font-medium text-gray-200">
-                            <button onclick="AdminDashboard.openAuction('${a.id}')" class="hover:text-brandBlue transition">
-                                ${a.title || '-'}
-                            </button>
-                        </td>
-                        <td class="py-3 px-4 text-gray-400">${Common.formatCurrency(a.currentPrice || a.startingPrice || 0)}</td>
-                        <td class="py-3 px-4">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full ${
-                                status === 'Active' ? 'bg-emerald-500/20 text-emerald-400' :
-                                status === 'Completed' ? 'bg-blue-500/20 text-blue-400' :
-                                'bg-red-500/20 text-red-400'
-                            }">${status}</span>
-                        </td>
-                        <td class="py-3 px-4 text-right">
-                            ${isActive ? `
-                                <button onclick="AdminDashboard.cancelAuction('${a.id}')" class="bg-red-500/20 text-red-400 px-3 py-1 rounded-md text-xs font-semibold hover:bg-red-500/30 transition">
-                                    Ləğv Et
-                                </button>
-                            ` : `<span class="text-xs text-gray-500">—</span>`}
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+                const row = document.createElement('tr');
+                row.className =
+                    'border-b border-gray-800/50 hover:bg-gray-800/20 transition';
+
+                row.innerHTML = `
+                <td class="py-3 px-4 font-medium text-gray-200">
+                    <button type="button"
+                            class="auction-title hover:text-brandBlue transition">
+                    </button>
+                </td>
+                <td class="auction-price py-3 px-4 text-gray-400"></td>
+                <td class="py-3 px-4">
+                    <span class="auction-status px-2 py-1 text-xs font-semibold rounded-full"></span>
+                </td>
+                <td class="auction-actions py-3 px-4 text-right"></td>
+            `;
+
+                const titleButton = row.querySelector('.auction-title');
+                titleButton.textContent = a.title || '-';
+                titleButton.addEventListener('click', () => {
+                    this.openAuction(a.id);
+                });
+
+                const priceCell = row.querySelector('.auction-price');
+                priceCell.textContent = Common.formatCurrency(
+                    a.currentPrice ?? a.startingPrice ?? 0
+                );
+
+                const statusBadge = row.querySelector('.auction-status');
+                statusBadge.textContent = status;
+
+                if (isActive) {
+                    statusBadge.classList.add(
+                        'bg-emerald-500/20', 'text-emerald-400'
+                    );
+                } else if (status === 'Completed') {
+                    statusBadge.classList.add(
+                        'bg-blue-500/20', 'text-blue-400'
+                    );
+                } else {
+                    statusBadge.classList.add(
+                        'bg-red-500/20', 'text-red-400'
+                    );
+                }
+
+                const actionsCell = row.querySelector('.auction-actions');
+
+                if (isActive) {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.type = 'button';
+                    cancelButton.className =
+                        'bg-red-500/20 text-red-400 px-3 py-1 rounded-md text-xs font-semibold hover:bg-red-500/30 transition';
+                    cancelButton.textContent = 'Ləğv Et';
+
+                    cancelButton.addEventListener('click', () => {
+                        this.cancelAuction(a.id);
+                    });
+
+                    actionsCell.appendChild(cancelButton);
+                } else {
+                    const placeholder = document.createElement('span');
+                    placeholder.className = 'text-xs text-gray-500';
+                    placeholder.textContent = '—';
+                    actionsCell.appendChild(placeholder);
+                }
+
+                tbody.appendChild(row);
+            });
         } catch (e) {
-            Common.showToast(e.errors || 'Hərraclar yüklənə bilmədi', 'error');
+            Common.showToast(
+                e.errors || 'Hərraclar yüklənə bilmədi',
+                'error'
+            );
         }
     },
-
     async loadCategories() {
         try {
             this.categories = await API.get('/api/Categories');
