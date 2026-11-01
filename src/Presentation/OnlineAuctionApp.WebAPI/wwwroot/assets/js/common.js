@@ -205,11 +205,12 @@ const Common = {
                 "fixed bottom-5 right-5 z-50 flex flex-col space-y-2";
             document.body.appendChild(toastBox);
         }
-
-        Common.showToast("Uğurludur", "success");
-        Common.showToast("Xəta baş verdi", "error");
-        Common.showToast("Diqqət!", "warning");
-        Common.showToast("Məlumat", "info");
+        const bgColors = {
+            success: "bg-green-600 text-white",
+            error: "bg-red-600 text-white",
+            info: "bg-blue-600 text-white",
+            warning: "bg-yellow-400 text-gray-900",
+        };
 
         const toast = document.createElement("div");
         toast.className = `${bgColors[type] || bgColors.info} px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0`;
