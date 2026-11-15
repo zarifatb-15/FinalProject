@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Localization;
 using System.Text;
 using OnlineAuctionApp.Application.Interfaces.Services;
 using OnlineAuctionApp.Application.Common.Localization;
@@ -17,6 +18,16 @@ using OnlineAuctionApp.WebAPI.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { LocalizationConstants.Azerbaijani, LocalizationConstants.English, LocalizationConstants.Russian };
+    options.SetDefaultCulture(LocalizationConstants.DefaultLanguage)
+           .AddSupportedCultures(supportedCultures)
+           .AddSupportedUICultures(supportedCultures);
+    options.RequestCultureProviders.Clear();
+    options.RequestCultureProviders.Add(
+        new AcceptLanguageHeaderRequestCultureProvider());
+});
 builder.Services.AddSignalR();
 builder.Services.AddOpenApi();
 
@@ -119,8 +130,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRequestLocalization();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
