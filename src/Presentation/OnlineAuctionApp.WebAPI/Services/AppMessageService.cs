@@ -1,17 +1,11 @@
 using OnlineAuctionApp.Application.Common.Localization;
 using OnlineAuctionApp.Application.Interfaces.Services;
+using System.Globalization;
 
 namespace OnlineAuctionApp.WebAPI.Services;
 
 public class AppMessageService : IAppMessageService
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AppMessageService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     private static readonly Dictionary<string, Dictionary<string, string>> Messages = new()
     {
         ["az"] = new Dictionary<string, string>
@@ -107,24 +101,6 @@ public class AppMessageService : IAppMessageService
 
     private string GetCurrentLanguage()
     {
-        var request = _httpContextAccessor.HttpContext?.Request;
-        var languageFromHeader = request?.Headers["Accept-Language"].ToString();
-
-        if (string.IsNullOrWhiteSpace(languageFromHeader))
-        {
-            return "az";
-        }
-
-        if (languageFromHeader.StartsWith("ru", StringComparison.OrdinalIgnoreCase))
-        {
-            return "ru";
-        }
-
-        if (languageFromHeader.StartsWith("en", StringComparison.OrdinalIgnoreCase))
-        {
-            return "en";
-        }
-
-        return "az";
+        return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     }
 }
